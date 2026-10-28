@@ -6,8 +6,10 @@ const A='10000000-0000-4000-8000-000000000001',B='10000000-0000-4000-8000-000000
 test('database enforces tenant isolation, provisioning, and role restrictions',async()=>{
  const db=new PGlite();
  try{
- await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth,public to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;insert into auth.users values('${A}'),('${B}');`);
+ await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth,public to authenticated,anon,service_role;grant execute on function auth.uid() to authenticated,anon;insert into auth.users values('${A}'),('${B}');`);
  await db.exec(await readFile(new URL('../supabase/migrations/202610280001_foundation.sql',import.meta.url),'utf8'));
+ await db.exec(await readFile(new URL('../supabase/migrations/202610280002_pro_tools.sql',import.meta.url),'utf8'));
+ await db.exec(await readFile(new URL('../supabase/migrations/202610280003_backups.sql',import.meta.url),'utf8'));
  async function as(user){await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[user]);await db.exec('set role authenticated');}
  await as(A);
  const wa=(await db.query("select public.create_workspace('Business A','General business',array['customers','tasks']) as id")).rows[0].id;
@@ -39,6 +41,40 @@ test('database enforces tenant isolation, provisioning, and role restrictions',a
  assert.equal((await db.query('select * from public.contacts')).rows[0].name,'Private B customer');
  await db.exec(`select public.configure_workspace('${wb}','Business B','Consulting',array['tasks'])`);
  assert.equal((await db.query('select * from public.contacts')).rows.length,0,'disabled modules cannot access records');
+ await db.exec(`select public.configure_workspace('${wb}','Business B','Consulting',array['customers','tasks'])`);
+ const cb=(await db.query(`select id from public.contacts where workspace_id='${wb}'`)).rows[0].id;
+ await db.query(`update public.contacts set email='customer@example.com' where id='${cb}'`);
+ await db.exec(`select public.request_support('${wb}','Need help','Please help with my workspace settings','Technical help')`);
+ await assert.rejects(db.exec(`select public.queue_followup('${wb}','${cb}','Checking in','Do you have any questions?',now()+interval '1 day',false)`),/Confirm consent/);
+ await db.exec(`select public.queue_followup('${wb}','${cb}','Checking in','Do you have any questions?',now()+interval '1 day',true)`);
+ const followup=(await db.query('select * from public.email_followups')).rows[0];
+ assert.equal(followup.recipient,'customer@example.com');
+ await assert.rejects(db.exec(`update public.email_followups set status='Sent'`),/permission denied/);
+ await assert.rejects(db.query('select * from public.claim_followups()'),/permission denied/);
+ const backup=(await db.query(`select public.export_workspace('${wb}') as result`)).rows[0].result;
+ assert.equal(backup.contacts.length,1);assert.equal(backup.followups.length,1);
+ await as(A);
+ assert.equal((await db.query('select * from public.email_followups')).rows.length,0);
+ assert.equal((await db.query('select * from public.support_requests')).rows.length,1,'admin can see the support queue');
+ await assert.rejects(db.query(`select public.export_workspace('${wb}')`),/Workspace owner required/);
+ await assert.rejects(db.query(`select public.queue_followup('${wa}','${cb}','Checking in','Do you have any questions?',now()+interval '1 day',true)`),/valid customer email/);
+ for(let n=0;n<30;n++)await db.query(`select public.use_ai('${wa}')`);
+ await assert.rejects(db.query(`select public.use_ai('${wa}')`),/Daily usage limit/);
+ await as(B);
+ await db.exec(`select public.cancel_followup('${wb}','${followup.id}')`);
+ assert.equal((await db.query('select status from public.email_followups')).rows[0].status,'Cancelled');
+ await db.exec('reset role');
+ await db.exec(`update public.email_followups set status='Queued',scheduled_at=now()-interval '1 minute' where id='${followup.id}';set role service_role`);
+ assert.equal((await db.query('select * from public.claim_followups()')).rows.length,1);
+ assert.equal((await db.query('select * from public.claim_followups()')).rows.length,0,'claimed messages cannot be sent twice');
+ await db.exec('reset role;set role service_role');
+ const backupJobs=(await db.query('select * from public.claim_backups()')).rows;
+ assert.equal(backupJobs.length,2);
+ assert.equal((await db.query('select * from public.claim_backups()')).rows.length,0,'only one backup per workspace per day');
+ await as(B);
+ assert.equal((await db.query('select * from public.workspace_backups')).rows.length,1,'backup metadata is isolated');
+ await assert.rejects(db.query('select * from public.claim_backups()'),/permission denied/);
+ await assert.rejects(db.query(`select public.backup_payload('${wa}')`),/permission denied/);
  await db.exec('reset role;set role anon');
  await assert.rejects(db.query('select * from public.contacts'),/permission denied/);
  await assert.rejects(db.query("select public.create_workspace('Anonymous','Other',array['tasks'])"),/permission denied/);

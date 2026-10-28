@@ -2,6 +2,16 @@
 import { redirect } from 'next/navigation';
 import { supabase } from '@/lib/supabase/server';
 const message = (path: string, text: string) => redirect(`${path}?message=${encodeURIComponent(text)}`);
+export async function signup(form:FormData){
+ const email=String(form.get('email')||'').trim();const password=String(form.get('password')||'');
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||email.length>254||password.length<12||password.length>128||password!==form.get('confirm'))message('/signup','Use a valid email and matching passwords of 12–128 characters.');
+ const origin=process.env.NEXT_PUBLIC_SITE_URL;
+ if(!origin)message('/signup','Account setup is temporarily unavailable. Please try again shortly.');
+ const client=await supabase();const {data,error}=await client.auth.signUp({email,password,options:{emailRedirectTo:`${origin}/auth/callback`}});
+ if(error)message('/signup','Unable to create an account. Try signing in if you already registered, or try again shortly.');
+ if(data.session)redirect('/onboarding');
+ redirect('/signup?sent=1');
+}
 export async function login(form: FormData) {
   const client = await supabase();
   const { error } = await client.auth.signInWithPassword({ email: String(form.get('email') || '').trim(), password: String(form.get('password') || '') });
