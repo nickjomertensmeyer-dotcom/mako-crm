@@ -51,3 +51,15 @@ The user approved production release on 2026-10-28. Migration 005 has now been a
 ## Resumed review
 
 Dashboard reporting now uses the authenticated `workspace_board_report` PostgreSQL aggregate, so board snapshot caps do not truncate dashboard totals or payment-period charts. Browser checks confirmed lead conversion preserves a comment, linked task/quote/appointment, and a conversion event; browser Back closes the panel; a custom currency column can be created; demo reset restores sample totals. Review screenshots are in `qa/mako-connected-board.png`, `qa/mako-connected-record-panel.png`, and `qa/mako-connected-overview.png`. Migration 005 is applied under the approved production release; check the deployment status before treating the app rollout as complete.
+
+## Account settings and navigation update
+
+The profile menu now provides personal settings, Appearance, Business settings, and Sign out (Exit demo in the sandbox). Real personal preferences use Supabase auth metadata only for display, never authorization. Display name, private profile photo, light/dark/device theme, board spacing, and reduced motion are supported. Business settings reuse the owner-protected configure_workspace RPC; hiding tools preserves records and does not change billing.
+
+Migration 202610280006_profile_photos.sql was applied to production under the approved release. It adds a private profile-photos bucket and own-user folder policies. No service-role credential is required for uploads. Photos are resized in the browser, limited to 250 KB WebP on the server and bucket, and served through an authenticated, private/no-store route. Profile photo removal cleans up the previous stored file. Personal name and appearance settings work independently of this storage migration.
+
+Demo preferences/photos and business configuration stay in sessionStorage; Reset demo clears them. Demo configuration leaves all sample tools available to explore and does not provision a real workspace. Demo exit does not sign out an existing real account.
+
+Internal workspace links use React/Next transitions, retaining the sidebar while server content loads. A blue/cyan/purple border orbits the sidebar during navigation, and new tab content fades/slides into place. OS and account reduced-motion settings suppress animations. In-page settings anchors retain native scrolling.
+
+Validation: ten automated tests pass, including private photo isolation across two users and anonymous denial. Type check, lint, and production build pass. Browser checks cover demo display name/photo, persistence across tabs, dark board contrast, menu Escape, business configuration, reset clearing profile/theme/configuration, and 390 px overflow. Real account writes and production photo storage are not exercised before release. Production publication was authorized after the local review.
