@@ -1,19 +1,19 @@
 # Mako CRM
 
-First milestone of Mako's hosted CRM: a white, blue/cyan/purple login experience, authenticated business workspaces, configurable onboarding, customer/lead records, tasks, and a restricted Mako owner console.
+Mako's hosted CRM uses Next.js and Supabase for authenticated, isolated business workspaces, configurable boards, connected records, documents, work scheduling, and a restricted owner console. See [WORKSPACE-UPGRADE.md](WORKSPACE-UPGRADE.md) for the current local upgrade, release procedure, tests, configuration, and limits.
 
 ## What works
 
 - Email/password sign-in, sign-out, reset-password flow, and invitation confirmation.
 - One initial workspace per account. Owners select their business preset and tools; members cannot edit workspace configuration.
-- Customer/lead creation and listing; task creation, completion, and reopening.
+- Shared customer/lead/task boards, comments/history, assignments, archive/restore, personal/shared views, linked records, and in-app workflow notifications (migration 005).
 - Mako owner console at `/owner` to manually assign Pro/Custom and active/pending/suspended access.
 - RLS and restricted database grants. A platform admin can manage workspace access but cannot automatically read customer or task records.
-- `/preview` is an explicitly labeled, read-only sample workspace; no live customer data.
+- `/preview` is an explicitly labeled interactive sandbox with fictional data, session-only changes, and reset; no external side effects.
 
 ## Not included yet
 
-Stripe billing/webhooks, automated subscription activation, staff invitation UI, account switching, customer editing/deletion/search/pagination, quotes, schedules, jobs, invoices, reporting, SMS, custom client features, and audit logs are future work. Self-service Pro signup, optional AI, scheduled email follow-ups, snapshots, and priority support are included in the Pro update below. Selected future modules show a **Soon** label and an honest placeholder. Record lists currently show the newest 100 records. Do not advertise this milestone as the complete Pro product.
+Stripe billing/webhooks and automatic subscription activation, staff invitation UI, account switching, SMS, realtime subscriptions, large-scale server-filtered boards, and custom client-specific features are not included. Invoice payments are manual records. Optional AI/email/backups require configuration. Team remains marked Soon. Read WORKSPACE-UPGRADE.md before release; the current approved release status is recorded there.
 
 ## Local setup
 

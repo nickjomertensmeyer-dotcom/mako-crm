@@ -1,1 +1,1 @@
-{"crons":[{"path":"/api/cron/followups","schedule":"*/10 * * * *"},{"path":"/api/cron/backups","schedule":"17 * * * *"}]}
+{"crons":[{"path":"/api/cron/followups","schedule":"*/10 * * * *"},{"path":"/api/cron/backups","schedule":"17 * * * *"},{"path":"/api/cron/boards","schedule":"*/15 * * * *"}]}

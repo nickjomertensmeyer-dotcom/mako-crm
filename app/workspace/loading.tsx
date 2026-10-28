@@ -1,0 +1,1 @@
+export default function Loading(){return <main id="main" className="loading-workspace" aria-busy="true" aria-label="Loading workspace"><span className="eyebrow">MAKO WORKSPACE</span><h1>Bringing your work into focus…</h1><p role="status">Loading your workspace records and permissions.</p><div className="loading-bars"><i/><i/><i/></div></main>;}

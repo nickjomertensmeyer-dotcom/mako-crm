@@ -1,3 +1,5 @@
+import {BoardWorkspace} from '@/components/board-workspace';
+import {loadBoards} from './board-actions';
 import {Assistant} from '@/components/assistant';
 import {Followups,Support,Plan} from '@/components/pro-tools';
 import {workspace,identity} from '@/lib/workspace';
@@ -5,7 +7,7 @@ import {Dashboard,Overview} from '@/components/dashboard';
 import {Records} from '@/components/records';
 import {Documents,WorkBoard} from '@/components/business-tools';
 import {redirect} from 'next/navigation';
-export default async function Page({searchParams}:{searchParams:Promise<{view?:string;message?:string;document?:string;new?:string;edit?:string;editWork?:string}>}){
+export default async function Page({searchParams}:{searchParams:Promise<{view?:string;message?:string;document?:string;new?:string;edit?:string;editWork?:string;record?:string}>}){
  const {client:authClient}=await identity();const {data:isAdmin}=await authClient.rpc('is_platform_admin');if(isAdmin)redirect('/owner');
  const {client,business,role}=await workspace();const params=await searchParams;const {view='overview',message}=params;
  const canContacts=business.modules.includes('customers')||business.modules.includes('leads');
@@ -13,11 +15,17 @@ export default async function Page({searchParams}:{searchParams:Promise<{view?:s
   canContacts?client.from('contacts').select('*',{count:'exact'}).eq('workspace_id',business.id).order('created_at',{ascending:false}).limit(1000):Promise.resolve({data:[],error:null,count:0}),
   business.modules.includes('tasks')?client.from('tasks').select('*',{count:'exact'}).eq('workspace_id',business.id).order('created_at',{ascending:false}).limit(1000):Promise.resolve({data:[],error:null,count:0}),
   view==='overview'||view==='invoices'?client.rpc('workspace_business_summary',{target:business.id}):Promise.resolve({data:null})]);
- const enabled=['overview','followups','assistant','support','plan'].includes(view)||business.modules.includes(view);
+ const enabled=['overview','followups','assistant','support','plan','workflows','notifications'].includes(view)||business.modules.includes(view);
  const emailReady=Boolean(process.env.RESEND_API_KEY&&process.env.FOLLOWUP_FROM_EMAIL&&process.env.SUPABASE_SECRET_KEY&&process.env.CRON_SECRET);
  const aiReady=Boolean(process.env.OPENAI_API_KEY&&process.env.OPENAI_MODEL);
  const active=business.status==='active'&&['pro','custom'].includes(business.plan);
  let content=null;
+ if(enabled&&['overview','customers','leads','tasks','workflows','notifications'].includes(view)){
+  const loaded=await loadBoards(params.record);
+  if(loaded.data)content=<BoardWorkspace initial={loaded.data} current={view} active={active}/>;
+  else content=<><p className="notice" role="alert">{loaded.error}</p>{view==='overview'?<Overview business={business} contacts={contacts||[]} tasks={tasks||[]} summary={summary||undefined}/>:['tasks','leads','customers'].includes(view)?<Records view={view} contacts={contacts||[]} tasks={tasks||[]} active={active}/>:null}</>;
+ }
+
  if(enabled&&['invoices','quotes'].includes(view)){
   const kind=view==='invoices'?'Invoice':'Quote';
   const {data:documents,error}=await client.from('business_documents').select('*').eq('workspace_id',business.id).eq('kind',kind).order('created_at',{ascending:false}).limit(200);
