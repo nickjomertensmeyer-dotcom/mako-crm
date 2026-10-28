@@ -1,0 +1,3 @@
+import { AuthShell } from '@/components/auth-shell';
+import { requestReset } from '../auth/actions';
+export default async function Page({ searchParams }: { searchParams: Promise<{ message?: string }> }) { const { message } = await searchParams; return <AuthShell><div className="auth-form"><p className="eyebrow">LET’S GET YOU BACK IN</p><h2>Reset your password.</h2><p className="muted">Enter your account email and we’ll send a reset link.</p>{message && <p className="notice" role="status">{message}</p>}<form action={requestReset}><label>Work email<input name="email" type="email" autoComplete="email" required /></label><button className="primary">Send reset link</button></form><a className="text-link" href="/login">Back to sign in</a></div></AuthShell>; }

@@ -1,0 +1,1 @@
+export default function NotFound(){return <main id="main" className="onboarding"><section className="onboarding-card"><h1>This page is off course.</h1><p>It may have moved, or your account may not have access.</p><a className="primary" href="/workspace">Back to your workspace</a></section></main>;}
