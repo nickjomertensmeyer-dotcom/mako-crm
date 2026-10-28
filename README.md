@@ -89,3 +89,17 @@ Daily workspace snapshots are stored as JSON in the private `mako-backups` Supab
 Support requests are visible to the workspace and the Mako platform owner. Customers can request technical help, bug fixes, security help, and minor configuration changes. You process the priority queue in `/owner`; support emails are not automatically sent by this app. Priority email is also available via the visible mail link. Response times and monthly maintenance are services you must perform under your agreement, not features that code can fulfill by itself.
 
 Production verification after connection: register a test Pro account, confirm email, complete onboarding, activate it as the Mako owner; test pipeline updates and support tickets. Schedule one consented follow-up to your own test email, verify provider delivery, then confirm a real snapshot and test its download/restore. AI and automated storage/email integrations have not been exercised against paid providers in local tests.
+
+## Business tools update (004)
+
+Run **only** `supabase/migrations/202610280004_business_tools.sql` once in Supabase SQL Editor, after migrations 001–003. It adds invoices, quotes, payment records, jobs, and appointments, and extends exports/backups to include them. Existing records are preserved. Until applied, the interface shows a database-update notice and disables saving new business tools. No additional server secret is needed for these tools.
+
+- Select the tools in Workspace settings and activate the agreed Pro/Custom plan in `/owner`.
+- Add a customer, then create an invoice or quote. Drafts can be edited. Finalize to lock prices, tax, and the customer/business snapshot. Finalizing does not email anything. Open **Print / save PDF** to share a copy yourself.
+- Manually record customer acceptance of a quote, then convert it into one invoice draft. Conversion retries return the same draft.
+- Record payments that were received externally, with date/method/reference. This is a receipt ledger, not card processing or payment-link integration. Balance checks and row locks reject overpayments; repeated receipt submissions with the same request ID are idempotent. Refunds, receipt correction, multi-currency accounting, and tax determination are not implemented.
+- Totals use integer cents and PostgreSQL numeric arithmetic. Line totals round to cents; tax is applied to the rounded subtotal. USD only. Use 1–30 items, quantity up to 10,000, and total before tax from $0.01 to $1,000,000. Users choose their applicable tax rate.
+- Schedule uses manually entered business-local dates/times. It is an agenda with job and appointment status tracking; calendar integrations, timezone conversion, and reminder sending are not connected.
+- List screens show the most recent 200 documents, or up to 200 upcoming/recent work items. Workspace summary metrics aggregate all accessible records. Customer/task editing screens load the latest 1,000 records; exports include all records within the existing export limit.
+
+Validation: production build; PostgreSQL tests for financial rounding, cross-business denial, disabled tools, frozen documents, overpayment rejection, receipt/conversion retries, anonymous access, and full export inclusion. `/preview` contains sample data for visual review only. Check a real active workspace after applying migration 004: customer → quote → finalize → record acceptance → convert → finalize invoice → partial/full receipt → print PDF. No live customer records, payments, or emails are created by the preview.

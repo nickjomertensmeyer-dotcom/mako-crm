@@ -10,6 +10,7 @@ test('database enforces tenant isolation, provisioning, and role restrictions',a
  await db.exec(await readFile(new URL('../supabase/migrations/202610280001_foundation.sql',import.meta.url),'utf8'));
  await db.exec(await readFile(new URL('../supabase/migrations/202610280002_pro_tools.sql',import.meta.url),'utf8'));
  await db.exec(await readFile(new URL('../supabase/migrations/202610280003_backups.sql',import.meta.url),'utf8'));
+ await db.exec(await readFile(new URL('../supabase/migrations/202610280004_business_tools.sql',import.meta.url),'utf8'));
  async function as(user){await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[user]);await db.exec('set role authenticated');}
  await as(A);
  const wa=(await db.query("select public.create_workspace('Business A','General business',array['customers','tasks']) as id")).rows[0].id;
