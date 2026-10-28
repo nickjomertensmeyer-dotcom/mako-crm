@@ -1,4 +1,8 @@
 // Only provider codes/statuses are used. Never echo a raw error containing user data.
+export function resendError(error:{code?:string;status?:number}):string {
+ if(error.status===429||['over_email_send_rate_limit','over_request_rate_limit','over_email_send_rate_limit_per_user'].includes(error.code||''))return 'The email service is limiting requests. Wait a few minutes before trying again.';
+ return 'We couldn’t send another confirmation email. Please try again later or contact Mako. If you already confirmed your email, sign in or reset your password.';
+}
 export function signupError(error:{code?:string;status?:number}):string {
   switch(error.code){
     case 'email_address_not_authorized': return 'Confirmation emails are not connected for public signup yet. Mako needs to configure an email provider in Supabase before new customers can register.';
