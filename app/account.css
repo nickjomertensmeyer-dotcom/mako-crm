@@ -1,4 +1,11 @@
 /* Workspace preferences and navigation: public and print pages keep their own theme. */
+.copyright-footer{padding:20px 16px;text-align:center;font-size:12px;line-height:1.6;color:#52647e;background:#fff;border-top:1px solid #e3eaf4;overflow-wrap:anywhere}
+.copyright-footer>span{margin:0 5px}
+body:has(.app-shell)>.copyright-footer{padding-left:264px;background:#f5f7fc}
+body:has(.app-shell[data-theme=dark])>.copyright-footer{color:#b3c4de;background:#0d1628;border-color:#354563}
+@media(max-width:1100px){body:has(.app-shell)>.copyright-footer{padding-left:228px}}
+@media(max-width:720px){body:has(.app-shell)>.copyright-footer{padding:18px 16px}}
+@media print{body:has(.app-shell)>.copyright-footer{padding:12px;color:#52647e;background:#fff;border:0}}
 @property --mako-orbit { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
 .sidebar::after{content:'';position:absolute;inset:0;pointer-events:none;padding:2px;border-radius:inherit;background:conic-gradient(from var(--mako-orbit),transparent 10%,#2457ff 35%,#03c5df 48%,#a64dff 60%,transparent 77%);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;opacity:0;transition:opacity .2s;z-index:3}
 .app-shell[data-navigating=true] .sidebar::after{opacity:1;animation:mako-orbit 1.4s linear infinite}
