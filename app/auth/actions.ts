@@ -1,6 +1,7 @@
 'use server';
 import { redirect } from 'next/navigation';
 import { supabase } from '@/lib/supabase/server';
+import { signupError } from '@/lib/signup-errors';
 const message = (path: string, text: string) => redirect(`${path}?message=${encodeURIComponent(text)}`);
 export async function signup(form:FormData){
  const email=String(form.get('email')||'').trim();const password=String(form.get('password')||'');
@@ -8,7 +9,10 @@ export async function signup(form:FormData){
  const origin=process.env.NEXT_PUBLIC_SITE_URL;
  if(!origin)message('/signup','Account setup is temporarily unavailable. Please try again shortly.');
  const client=await supabase();const {data,error}=await client.auth.signUp({email,password,options:{emailRedirectTo:`${origin}/auth/callback`}});
- if(error)message('/signup','Unable to create an account. Try signing in if you already registered, or try again shortly.');
+ if(error){
+  console.warn('Mako signup failed',{code:error.code||'unknown',status:error.status});
+  message('/signup',signupError(error));
+ }
  if(data.session)redirect('/onboarding');
  redirect('/signup?sent=1');
 }
