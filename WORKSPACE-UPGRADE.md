@@ -60,6 +60,12 @@ Migration 202610280006_profile_photos.sql was applied to production under the ap
 
 Demo preferences/photos and business configuration stay in sessionStorage; Reset demo clears them. Demo configuration leaves all sample tools available to explore and does not provision a real workspace. Demo exit does not sign out an existing real account.
 
-Internal workspace links use React/Next transitions, retaining the sidebar while server content loads. A blue/cyan/purple border orbits the sidebar during navigation, and new tab content fades/slides into place. OS and account reduced-motion settings suppress animations. In-page settings anchors retain native scrolling.
+Internal workspace links use React/Next transitions, retaining the sidebar while server content loads. New tab content fades/slides into place. The animated sidebar border was removed at the user’s request. OS and account reduced-motion settings suppress animations. In-page settings anchors retain native scrolling.
 
 Validation: ten automated tests pass, including private photo isolation across two users and anonymous denial. Type check, lint, and production build pass. Browser checks cover demo display name/photo, persistence across tabs, dark board contrast, menu Escape, business configuration, reset clearing profile/theme/configuration, and 390 px overflow. Real account writes and production photo storage are not exercised before release. Production publication was authorized after the local review.
+
+## Business identity, copyright, and dark-mode follow-up
+
+The root layout renders “© Mako CRM · Customer Relationship Systems” on every page. Business settings support a private workspace logo, preserving the image’s aspect ratio; the sidebar shows it beside the business name. Owners upload/remove logos, members can view them, and other workspaces have no access. The Mako brand logo above the workspace identity remains intact. Migration 007 adds the optional workspaces.logo_path field, private business-logos bucket, and atomic owner-protected configure_workspace_branding RPC. Existing configurations without a logo continue to work. Demo identity uses tab-session storage and Reset demo restores the initial badge.
+
+Dark-mode document table headers and job-date cards now use readable foreground/background pairs. Dashboard card tops retain the original blue (#2457e8), purple (#793ce6), and cyan (#00cbe8) colors, as do chart accents and key borders. Smooth page transitions remain; the animated sidebar outline is removed. Ten automated tests pass, including owner/member/cross-workspace logo restrictions.

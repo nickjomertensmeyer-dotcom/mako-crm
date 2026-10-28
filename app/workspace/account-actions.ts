@@ -4,15 +4,31 @@ import {accountSettings, validatePreferences, type AccountSettings} from '@/lib/
 import {workspace} from '@/lib/workspace';
 import {industries,modules} from '@/lib/presets';
 import {revalidatePath} from 'next/cache';
-export async function saveBusinessSettings(form:FormData):Promise<{error?:string}> {
+export async function saveBusinessSettings(form:FormData):Promise<{error?:string;logoPath?:string}> {
   const {client,business,role}=await workspace();
   if(role!=='owner')return {error:'Only the workspace owner can change business settings.'};
   const name=String(form.get('name')||'').trim(),industry=String(form.get('industry')||'');
   const selected=[...new Set(form.getAll('modules').map(String))];
   if(name.length<2||name.length>100||!(industries as readonly string[]).includes(industry)||!selected.length||selected.some(value=>!(modules as readonly string[]).includes(value)))return {error:'Check the business details and choose at least one valid tool.'};
-  const {error}=await client.rpc('configure_workspace',{target:business.id,business_name:name,business_industry:industry,selected_modules:selected});
-  if(error)return {error:'Unable to save business settings. Please try again.'};
-  revalidatePath('/workspace');return {};
+  let uploaded='';
+  try{
+    let logoPath:string|undefined;
+    const logo=form.get('businessLogo');
+    if(logo instanceof File&&logo.size){
+      if(logo.size>250000||logo.type!=='image/webp')throw new Error('Choose a PNG, JPEG, or WebP logo under 5 MB.');
+      const bytes=Buffer.from(await logo.arrayBuffer());
+      if(bytes.toString('ascii',0,4)!=='RIFF'||bytes.toString('ascii',8,12)!=='WEBP')throw new Error('The logo format could not be verified.');
+      uploaded=`${business.id}/${crypto.randomUUID()}.webp`;
+      const {error}=await client.storage.from('business-logos').upload(uploaded,bytes,{contentType:'image/webp',upsert:false});
+      if(error)throw new Error('Logo upload is unavailable. Please contact Mako to check business logo storage.');
+      logoPath=uploaded;
+    }else if(form.get('removeLogo')==='on')logoPath='';
+    const parameters={target:business.id,business_name:name,business_industry:industry,selected_modules:selected};
+    const {error}=logoPath===undefined?await client.rpc('configure_workspace',parameters):await client.rpc('configure_workspace_branding',{...parameters,new_logo:logoPath});
+    if(error)throw new Error('Unable to save business settings. Please try again.');
+    if(logoPath!==undefined&&typeof business.logo_path==='string'&&business.logo_path.startsWith(`${business.id}/`)&&business.logo_path!==logoPath)await client.storage.from('business-logos').remove([business.logo_path]);
+    revalidatePath('/workspace');return {logoPath};
+  }catch(problem){if(uploaded)await client.storage.from('business-logos').remove([uploaded]);return {error:problem instanceof Error?problem.message:'Unable to save business settings.'};}
 }
 export async function saveAccountSettings(form: FormData): Promise<{settings?:AccountSettings; error?:string}> {
   const client=await supabase();

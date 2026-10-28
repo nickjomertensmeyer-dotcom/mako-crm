@@ -1,5 +1,6 @@
 'use client';
 import Image from 'next/image';
+import {preparePhoto} from '@/lib/image-client';
 import Link from 'next/link';
 import {createContext,useContext,useEffect,useRef,useState,useTransition,type ReactNode,type MouseEvent} from 'react';
 import {useRouter} from 'next/navigation';
@@ -43,15 +44,6 @@ export function ProfileMenu(){
   const {settings,demo}=useContext(AccountContext),menu=useRef<HTMLDetailsElement>(null);const base=demo?'/preview':'/workspace';
   useEffect(()=>{const close=(event:globalThis.MouseEvent)=>{if(!menu.current?.contains(event.target as Node)&&menu.current)menu.current.open=false;};document.addEventListener('click',close);return()=>document.removeEventListener('click',close);},[]);
   return <details className="profile-menu" ref={menu} onKeyDown={event=>{if(event.key==='Escape'&&menu.current){menu.current.open=false;menu.current.querySelector('summary')?.focus();}}}><summary aria-label="Open profile menu"><Photo/><ChevronDown size={14}/></summary><div className="profile-dropdown"><strong>{settings.name||'Your account'}</strong><small>{settings.email||'Account preferences'}</small><Link href={`${base}?view=settings`} onClick={()=>{if(menu.current)menu.current.open=false;}}><Settings size={17}/>Settings</Link><Link href={`${base}?view=business-settings`} onClick={()=>{if(menu.current)menu.current.open=false;}}><Settings2 size={17}/>Business settings</Link><Link href={`${base}?view=settings#appearance`} onClick={()=>{if(menu.current)menu.current.open=false;}}><Palette size={17}/>Appearance</Link>{demo?<Link href="/login"><LogOut size={17}/>Exit demo</Link>:<form action={logout}><button type="submit"><LogOut size={17}/>Sign out</button></form>}</div></details>;
-}
-async function preparePhoto(file:File){
-  if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>5000000)throw new Error('Choose a PNG, JPEG, or WebP image under 5 MB.');
-  const bitmap=await createImageBitmap(file);try{
-    const canvas=document.createElement('canvas');canvas.width=384;canvas.height=384;const context=canvas.getContext('2d');if(!context)throw new Error('Photo processing is unavailable in this browser.');
-    const side=Math.min(bitmap.width,bitmap.height);context.drawImage(bitmap,(bitmap.width-side)/2,(bitmap.height-side)/2,side,side,0,0,384,384);
-    const blob=await new Promise<Blob>((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('Unable to prepare your photo.')),'image/webp',.82));
-    if(blob.type!=='image/webp'||blob.size>250000)throw new Error('This image could not be resized. Try another photo.');return blob;
-  }finally{bitmap.close();}
 }
 export function AccountSettingsPage({owner=false}:{owner?:boolean}){
   const {settings,setSettings,demo}=useContext(AccountContext);const [busy,setBusy]=useState(''),[feedback,setFeedback]=useState({section:'',error:false,text:''});

@@ -15,6 +15,18 @@ test('boards: edits, isolation, personal views, relationships, comments, convers
  await as(B);const wb=(await query("select create_workspace('Beta','General business',array['tasks','customers','leads']) id"))[0].id;
  await db.exec(`reset role;update public.workspaces set plan='pro',status='active';insert into public.memberships(workspace_id,user_id) values('${wa}','${C}');`);
  await as(A);
+ const logo=wa+'/20000000-0000-4000-8000-000000000001.webp';
+ await query("insert into storage.objects(bucket_id,name) values('business-logos',$1)",[logo]);
+ await query("select configure_workspace_branding($1,'Alpha','General business',array['tasks','leads','customers','invoices','quotes','jobs','schedule'],$2)",[wa,logo]);
+ assert.equal((await query('select logo_path from workspaces where id=$1',[wa]))[0].logo_path,logo);
+ await assert.rejects(query("select configure_workspace_branding($1,'Alpha','General business',array['tasks'],$2)",[wa,wb+'/20000000-0000-4000-8000-000000000001.webp']),/Invalid business logo/);
+ await as(C);assert.equal((await query("select * from storage.objects where bucket_id='business-logos'")).length,1,'workspace member can see business logo');
+ await assert.rejects(query("insert into storage.objects(bucket_id,name) values('business-logos',$1)",[wa+'/member.webp']),/row-level security/);
+ await assert.rejects(query("select configure_workspace_branding($1,'Alpha','General business',array['tasks'],$2)",[wa,logo]),/Owner access/);
+ await query("delete from storage.objects where bucket_id='business-logos'");
+ assert.equal((await query("select * from storage.objects where bucket_id='business-logos'")).length,1,'member cannot delete logo');
+ await as(B);assert.equal((await query("select * from storage.objects where bucket_id='business-logos'")).length,0,'other workspace cannot read logo');
+ await as(A);
  await query("select set_workflow_rule($1,'task_assigned',true),set_workflow_rule($1,'lead_won',true),set_workflow_rule($1,'task_overdue',true),set_workflow_rule($1,'followup_due',true)",[wa]);
  const save=async(board,id,version,patch)=>(await query('select save_board_record($1,$2,$3,$4,$5::jsonb) result',[wa,board,id,version,JSON.stringify(patch)]))[0].result;
  let lead=await save('leads',null,null,{name:'A lead',email:'lead@example.com',owner_id:C,estimated_value:1200,followup_date:'2020-01-01',notes:'Keep this history'});

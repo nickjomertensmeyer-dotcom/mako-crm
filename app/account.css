@@ -6,10 +6,6 @@ body:has(.app-shell[data-theme=dark])>.copyright-footer{color:#b3c4de;background
 @media(max-width:1100px){body:has(.app-shell)>.copyright-footer{padding-left:228px}}
 @media(max-width:720px){body:has(.app-shell)>.copyright-footer{padding:18px 16px}}
 @media print{body:has(.app-shell)>.copyright-footer{padding:12px;color:#52647e;background:#fff;border:0}}
-@property --mako-orbit { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
-.sidebar::after{content:'';position:absolute;inset:0;pointer-events:none;padding:2px;border-radius:inherit;background:conic-gradient(from var(--mako-orbit),transparent 10%,#2457ff 35%,#03c5df 48%,#a64dff 60%,transparent 77%);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;opacity:0;transition:opacity .2s;z-index:3}
-.app-shell[data-navigating=true] .sidebar::after{opacity:1;animation:mako-orbit 1.4s linear infinite}
-@keyframes mako-orbit{to{--mako-orbit:360deg}}
 .workspace-page-enter{animation:mako-page-in .22s ease-out}
 @keyframes mako-page-in{from{opacity:.55;transform:translateY(5px)}to{opacity:1;transform:none}}
 .navigation-status{position:fixed;bottom:16px;right:20px;background:#15243f;color:#fff;padding:9px 14px;border:1px solid #55d8ef;border-radius:8px;font-size:12px;z-index:80;box-shadow:0 4px 20px #2457ff30}
@@ -21,7 +17,7 @@ body:has(.app-shell[data-theme=dark])>.copyright-footer{color:#b3c4de;background
 .account-settings{max-width:920px}.account-settings .panel{scroll-margin-top:24px}.account-settings .panel h2{font-size:20px}.settings-jumps{display:flex;gap:20px;margin:20px 0 24px;font-size:14px}.photo-setting{display:flex;gap:22px;align-items:center;margin-bottom:24px}.account-settings form>input:not([type=hidden]),.account-settings form>select{max-width:520px;display:block;margin-bottom:18px}.account-settings label{font-size:14px;display:block;font-weight:600;margin-bottom:8px}.account-settings .check-setting{display:flex;align-items:center;gap:10px;margin:18px 0}.check-setting input{width:18px;height:18px;margin:0;flex-shrink:0}.account-settings input[type=file]{font-size:13px;padding:8px;max-width:100%;margin-bottom:8px}.account-settings .primary{margin-top:12px}.settings-success,.settings-error{display:flex;align-items:center;gap:6px;font-size:14px;margin-top:14px}.settings-success{color:#08704e}.settings-error{color:#b32337}.settings-links{display:flex;flex-wrap:wrap;gap:18px;margin-bottom:25px;font-size:14px}.demo-settings-notice strong{display:block;margin-bottom:5px}.settings-jumps a,.settings-links a{text-decoration:underline;text-underline-offset:4px}
 .app-shell[data-density=compact] .record-board td{padding-top:6px;padding-bottom:6px;height:36px}.app-shell[data-density=compact] .record-board input,.app-shell[data-density=compact] .record-board select{padding-top:5px;padding-bottom:5px;min-height:28px}
 .app-shell :focus-visible{outline:3px solid #00bcd9;outline-offset:3px}
-.app-shell[data-theme=dark]{--navy:#e6edff;--line:#354563;--blue:#8baaff;--purple:#bb99ff;background:#0d1628;color:#e6edff;color-scheme:dark}
+.app-shell[data-theme=dark]{--navy:#e6edff;--line:#354563;--blue:#2457e8;--purple:#793ce6;background:#0d1628;color:#e6edff;color-scheme:dark}
 .app-shell[data-theme=dark] :is(.app-body,.dashboard-content){background:#0d1628;color:#e6edff}
 .app-shell[data-theme=dark] :is(.app-header,.panel,.metric-card,.board-toolbar,.board-scroll,.record-board,.record-dialog,.record-dialog>header,.record-dialog-body,.profile-dropdown,.document-card,.work-card,.stats article,.table-scroll,.business-document,.assistant-messages,.assistant-form){background:#17243b;color:#e6edff;border-color:#354563}
 .app-shell[data-theme=dark] :is(h1,h2,h3,h4,strong,th,td,label,.metric-card,.pipeline-step,.contact-row,.task-row,.profile-dropdown button){color:#e6edff}
@@ -47,3 +43,17 @@ body:has(.app-shell[data-theme=dark])>.copyright-footer{color:#b3c4de;background
 @media(max-width:720px){.sidebar{position:relative}.profile-dropdown{width:min(260px,calc(100vw - 32px))}.header-right{gap:8px}.photo-setting{align-items:flex-start;gap:12px}.photo-setting>div{min-width:0}.settings-jumps{gap:14px;flex-wrap:wrap}.navigation-status{bottom:10px;right:10px}.account-settings .panel{padding:18px}}
 
 .settings-tools-heading{margin-top:24px}.settings-module-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0 20px}.account-settings fieldset>input,.account-settings fieldset>select{display:block;max-width:520px;margin-bottom:18px}
+
+.business-logo{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;width:34px;height:34px;border-radius:9px;background:#294566;color:#65e0ef;font-weight:700}.business-logo img{width:100%;height:100%;object-fit:contain}.business-logo.large{width:80px;height:80px;font-size:28px;border:1px solid var(--line)}.workspace-chip>span.business-logo{padding:0}.business-logo-setting{display:flex;align-items:center;gap:20px;margin-bottom:24px}.business-logo-setting>div{min-width:0}
+.app-shell[data-theme=dark] :is(.table-scroll th,.document-list th){background:#263953;color:#e4edff;border-color:#405778}.app-shell[data-theme=dark] .agenda-date{background:#173e51;color:#a8efff;border-color:#28c8e5}.app-shell[data-theme=dark] .agenda-date strong{color:#c4f6ff}.app-shell[data-theme=dark] :is(.agenda-copy p,.agenda-copy small,.work-notes){color:#bdcfe7}
+.app-shell[data-theme=dark] .dashboard-content a:not(.primary){color:#9bb7ff}
+.app-shell[data-theme=dark] :is(.metric-card,.stats article){border-top-color:#2457e8}
+.app-shell[data-theme=dark] .metric-card:nth-child(3n+2),.app-shell[data-theme=dark] .stats article:nth-child(2){border-top-color:#793ce6}
+.app-shell[data-theme=dark] .metric-card:nth-child(3n),.app-shell[data-theme=dark] .stats article:nth-child(3){border-top-color:#00cbe8}
+.app-shell[data-theme=dark] .accent-panel{border-top-color:#793ce6}
+.app-shell[data-theme=dark] .record-dialog>header{border-bottom-color:#00cbe8}
+.app-shell[data-theme=dark] .group-row th{border-left-color:#793ce6}
+.app-shell[data-theme=dark] .saved-view-tabs button{border-bottom-color:#793ce6}
+.app-shell[data-theme=dark] .agenda-date{border-top-color:#00cbe8}
+
+.app-shell[data-theme=dark] .eyebrow{color:#baa9ff}
