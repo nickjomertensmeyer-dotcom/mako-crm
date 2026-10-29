@@ -1,12 +1,13 @@
 'use client';
+import {AssetIcon,RecurringIcon,BookingIcon,ProjectIcon,InventoryIcon} from './tool-icons';
 import {useEffect,useState} from 'react';
 import {useRouter} from 'next/navigation';
-import {Plus,Package,Repeat,CalendarDays,BriefcaseBusiness,Car,Save,X} from 'lucide-react';
+import {Plus,Package,Save,X} from 'lucide-react';
 import {operationKinds,projectCosts,stockOnHand,validateOperation,type Operation,type Movement} from '@/lib/operations';
 import {saveOperation,stockAction,receivePurchase,cancelWorkspaceBooking} from '@/app/workspace/operation-actions';
 type Contact={id:string;name:string};type Work={id:string;title:string};
 const names:Record<string,string>={assets:'Service assets',recurring:'Recurring work',booking:'Online booking',projects:'Projects & costs',inventory:'Inventory & purchasing'};
-const icons={assets:Car,recurring:Repeat,booking:CalendarDays,projects:BriefcaseBusiness,inventory:Package};
+const icons={assets:AssetIcon,recurring:RecurringIcon,booking:BookingIcon,projects:ProjectIcon,inventory:InventoryIcon};
 const blank=(kind:string):Operation=>({id:'',kind,title:'',customer_id:null,work_id:null,status:'Active',notes:'',details:Object.fromEntries(operationKinds[kind].fields.map(f=>[f.key,f.options?.[0]|| (f.key==='timezone'?'America/Chicago':f.key==='unit'?'each':'')])),version:0,archived:false});
 export function Operations({view,initial=[],movements=[],contacts=[],work=[],demo=false,enabled=true,owner=false,workspaceId='',bookings=[],totals={},visits=[]}:{view:string;visits?:{plan_id:string;visit_date:string;work_id:string}[];totals?:Record<string,number>;initial?:Operation[];movements?:Movement[];contacts?:Contact[];work?:Work[];demo?:boolean;enabled?:boolean;owner?:boolean;workspaceId?:string;bookings?:{id:string;slot_id:string;name:string;email:string;cancelled:boolean}[]}){
  const router=useRouter(),[records,setRecords]=useState(initial),[moves,setMoves]=useState(movements),[balances,setBalances]=useState(totals),[editing,setEditing]=useState<Operation|null>(null),[message,setMessage]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[query,setQuery]=useState(''),[archived,setArchived]=useState(false),[kind,setKind]=useState(Object.keys(operationKinds).find(k=>operationKinds[k].module===view)||'asset');

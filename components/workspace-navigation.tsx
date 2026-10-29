@@ -1,10 +1,11 @@
 'use client';
 import Link from 'next/link';
 import {LayoutDashboard,Users,Target,FileText,CalendarDays,BriefcaseBusiness,ListChecks,Mail} from 'lucide-react';
+import {AssetIcon,RecurringIcon,BookingIcon,ProjectIcon,InventoryIcon} from './tool-icons';
 import {useBusinessIdentity} from './business-identity';
 import {SharkyLaunchButton} from './sharky-assistant';
 import type {Business} from './dashboard';
-const links=[['customers','Customers',Users],['leads','Leads',Target],['quotes','Quotes',FileText],['schedule','Schedule',CalendarDays],['jobs','Jobs',BriefcaseBusiness],['invoices','Invoices',FileText],['tasks','Tasks',ListChecks],['assets','Service assets',BriefcaseBusiness],['recurring','Recurring work',CalendarDays],['booking','Online booking',CalendarDays],['projects','Projects & costs',BriefcaseBusiness],['inventory','Inventory',BriefcaseBusiness],['team','Team',Users]] as const;
+const links=[['customers','Customers',Users],['leads','Leads',Target],['quotes','Quotes',FileText],['schedule','Schedule',CalendarDays],['jobs','Jobs',BriefcaseBusiness],['invoices','Invoices',FileText],['tasks','Tasks',ListChecks],['assets','Service assets',AssetIcon],['recurring','Recurring work',RecurringIcon],['booking','Online booking',BookingIcon],['projects','Projects & costs',ProjectIcon],['inventory','Inventory',InventoryIcon],['team','Team',Users]] as const;
 const groups=[['Sales',['customers','leads','quotes']],['Work',['tasks','jobs','schedule','assets','recurring','booking','projects','inventory','team']],['Billing',['invoices']]] as const;
 export function WorkspaceNavigation({business,demo=false,current}:{business:Business;demo?:boolean;current:string}){
   const configured=useBusinessIdentity(business,demo),base=demo?'/preview':'/workspace';

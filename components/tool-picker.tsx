@@ -1,5 +1,6 @@
 'use client';
 import {Users,Target,FileText,CalendarDays,BriefcaseBusiness,Receipt,ListChecks,UsersRound,Check,Plus} from 'lucide-react';
+import {AssetIcon,RecurringIcon,BookingIcon,ProjectIcon,InventoryIcon} from './tool-icons';
 import {modules} from '@/lib/presets';
 const tools={
   customers:{label:'Customers',description:'Manage your relationships',icon:Users},
@@ -9,11 +10,11 @@ const tools={
   jobs:{label:'Jobs',description:'Keep work moving',icon:BriefcaseBusiness},
   invoices:{label:'Invoices',description:'Invoices and recorded payments',icon:Receipt},
   tasks:{label:'Tasks',description:'Stay on top of next steps',icon:ListChecks},
-  assets:{label:'Service assets',description:'Vehicles, properties, equipment and pets',icon:BriefcaseBusiness},
-  recurring:{label:'Recurring work',description:'Repeating jobs and service plans',icon:CalendarDays},
-  booking:{label:'Online booking',description:'Publish appointment slots',icon:CalendarDays},
-  projects:{label:'Projects & costs',description:'Milestones, time and expenses',icon:ListChecks},
-  inventory:{label:'Inventory & purchasing',description:'Stock ledger, suppliers and orders',icon:Receipt},
+  assets:{label:'Service assets',description:'Vehicles, properties, equipment and pets',icon:AssetIcon},
+  recurring:{label:'Recurring work',description:'Repeating jobs and service plans',icon:RecurringIcon},
+  booking:{label:'Online booking',description:'Publish appointment slots',icon:BookingIcon},
+  projects:{label:'Projects & costs',description:'Milestones, time and expenses',icon:ProjectIcon},
+  inventory:{label:'Inventory & purchasing',description:'Stock ledger, suppliers and orders',icon:InventoryIcon},
   team:{label:'Team',description:'Planned workspace feature',icon:UsersRound},
 };
 export function ToolPicker({selected,onChange}:{selected:readonly string[];onChange:(next:string[])=>void}){
