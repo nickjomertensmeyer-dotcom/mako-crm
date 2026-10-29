@@ -93,3 +93,9 @@ Browser QA covers hover/focus notice, header hide, launcher hide, hidden state a
 The sidebar business identity is now an accessible link to Business settings for both real workspaces and the demo. Shared client navigation reflects the saved workspace module list; empty Sales, Work, or Billing groups are omitted, and contact-dependent Follow-ups is hidden when neither customers nor leads is enabled. Fin and workspace administration remain available. Real accounts use the existing server-authorized configuration and refresh; demo navigation reads only this tab’s saved sample configuration and responds immediately to save/reset events. Hiding tools preserves existing records and does not alter billing or server permissions.
 
 Browser QA covers clicking the business bar, disabling Jobs and Quotes, sidebar removal, persistence after refresh, re-enabling tools, and demo reset. Type check, lint, and production build pass.
+
+## Tool-picker and settings-control styling
+
+Business settings and workspace onboarding share a native-checkbox ToolPicker with icon cards, selected/add states, checkmarks, blue/purple/cyan accents, and keyboard-visible focus. Team retains its Soon label; no new capability is represented as available. Values and form field names remain compatible with the existing server validation and workspace-module configuration. Profile/settings preference checkboxes, file-selector buttons, and the business Save action receive matching styling. Board row-selection controls remain compact. Light/dark palettes, disabled fieldsets, touch sizes, and reduced-motion preferences are supported.
+
+Browser checks confirm click and Space-key selection, saved sidebar synchronization, and a 390px mobile layout with no horizontal document overflow. Type check, lint, and production build pass.
