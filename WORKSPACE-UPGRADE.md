@@ -58,7 +58,7 @@ The profile menu now provides personal settings, Appearance, Business settings, 
 
 Migration 202610280006_profile_photos.sql was applied to production under the approved release. It adds a private profile-photos bucket and own-user folder policies. No service-role credential is required for uploads. Photos are resized in the browser, limited to 250 KB WebP on the server and bucket, and served through an authenticated, private/no-store route. Profile photo removal cleans up the previous stored file. Personal name and appearance settings work independently of this storage migration.
 
-Demo preferences/photos and business configuration stay in sessionStorage; Reset demo clears them. Demo configuration leaves all sample tools available to explore and does not provision a real workspace. Demo exit does not sign out an existing real account.
+Demo preferences/photos and business configuration stay in sessionStorage; Reset demo clears them. Demo configuration updates the sidebar to match the selected tools and does not provision a real workspace. Demo exit does not sign out an existing real account.
 
 Internal workspace links use React/Next transitions, retaining the sidebar while server content loads. New tab content fades/slides into place. The animated sidebar border was removed at the user’s request. OS and account reduced-motion settings suppress animations. In-page settings anchors retain native scrolling.
 
@@ -87,3 +87,9 @@ The assistant display name is now Fin throughout chat, navigation, labels, sampl
 Fin uses a minimal single-outline fin icon. A tooltip identifies the launcher as “Fin — your AI assistant” on hover or keyboard focus while chat is closed; Escape dismisses it. An X on the launcher and the chat header hides both chat and launcher, cancels any pending client request, and records the hidden preference in this browser tab’s session storage. The sidebar Fin button remains visible and restores the bubble without opening chat; when already visible it opens chat as before. Hiding does not delete the in-memory conversation. The launcher waits for its saved preference before rendering, avoiding a flash after refresh. Demo reset clears the hidden preference. The chat panel opens with a short pop from the launcher position, honoring existing device/account reduced-motion settings. No server, billing, or database changes are introduced.
 
 Browser QA covers hover/focus notice, header hide, launcher hide, hidden state after refresh, sidebar restore, and pop-animation CSS. Type check, lint, and production build pass.
+
+## Business-bar navigation and configured sidebar
+
+The sidebar business identity is now an accessible link to Business settings for both real workspaces and the demo. Shared client navigation reflects the saved workspace module list; empty Sales, Work, or Billing groups are omitted, and contact-dependent Follow-ups is hidden when neither customers nor leads is enabled. Fin and workspace administration remain available. Real accounts use the existing server-authorized configuration and refresh; demo navigation reads only this tab’s saved sample configuration and responds immediately to save/reset events. Hiding tools preserves existing records and does not alter billing or server permissions.
+
+Browser QA covers clicking the business bar, disabling Jobs and Quotes, sidebar removal, persistence after refresh, re-enabling tools, and demo reset. Type check, lint, and production build pass.

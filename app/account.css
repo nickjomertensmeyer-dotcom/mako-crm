@@ -57,3 +57,5 @@ body:has(.app-shell[data-theme=dark])>.copyright-footer{color:#b3c4de;background
 .app-shell[data-theme=dark] .agenda-date{border-top-color:#00cbe8}
 
 .app-shell[data-theme=dark] .eyebrow{color:#baa9ff}
+.sidebar a.workspace-chip{color:inherit;text-decoration:none;cursor:pointer;transition:border-color .15s,background .15s}
+.sidebar a.workspace-chip:hover{border-color:#00cbe8;background:#263b5b}
