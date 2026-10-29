@@ -34,3 +34,5 @@
 html[data-reduced-motion=true] .sharky-bubble.fin-button-pop{animation:none}
 
 .fin-coming-soon{display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:10px;letter-spacing:.03em;color:#52648a;background:#f0f4ff;border-bottom:1px solid #dce5f5;flex-shrink:0}.fin-coming-soon>span{width:5px;height:5px;border-radius:50%;background:linear-gradient(135deg,#00c7df,#7040ed)}.app-shell[data-theme=dark] .fin-coming-soon{background:#18283f;color:#c4d4f2;border-color:#344761}
+
+.fin-pro-notice strong{display:block;font-size:12px}.fin-pro-notice p{margin:6px 0 10px;line-height:1.5}.fin-pro-notice a{display:inline-flex;align-items:center;min-height:36px;padding:7px 11px;border-radius:8px;background:#2454ef;color:#fff;font-weight:600;text-decoration:none}.fin-pro-notice a:focus-visible{outline:2px solid #00c7df;outline-offset:3px}
