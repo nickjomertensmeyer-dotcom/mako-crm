@@ -99,3 +99,13 @@ Browser QA covers clicking the business bar, disabling Jobs and Quotes, sidebar 
 Business settings and workspace onboarding share a native-checkbox ToolPicker with icon cards, selected/add states, checkmarks, blue/purple/cyan accents, and keyboard-visible focus. Team retains its Soon label; no new capability is represented as available. Values and form field names remain compatible with the existing server validation and workspace-module configuration. Profile/settings preference checkboxes, file-selector buttons, and the business Save action receive matching styling. Board row-selection controls remain compact. Light/dark palettes, disabled fieldsets, touch sizes, and reduced-motion preferences are supported.
 
 Browser checks confirm click and Space-key selection, saved sidebar synchronization, and a 390px mobile layout with no horizontal document overflow. Type check, lint, and production build pass.
+
+## Expanded business types and automatic presets
+
+Business settings and onboarding now offer 28 grouped business types (22 additions). Changing type selects a recommended set of implemented tools; users can customize before saving or reapply the preset. Existing records, plan/billing, and saved tool choices are preserved until a new selection is saved. Team is deliberately excluded from all automatic presets because it remains a planned tool. Demo settings remain session-only.
+
+Migration 008 expands industry validation in create_workspace/configure_workspace through a shared SQL validator. It preserves existing ownership checks, onboarding advisory locking, memberships, existing function grants, and record data. The workspace-logo RPC continues to call the updated configuration function. No existing workspace is automatically reconfigured by the migration.
+
+Fifteen automated tests pass, including catalog completeness, compatibility with the original six types, no planned tools in presets, new-industry database acceptance, invalid-industry rejection, owner checks, tenant isolation, and record preservation. Browser checks cover Beauty & wellness selecting four tools, custom selection plus reapply, HVAC selecting seven tools, saved sidebar changes, and persistence after reload.
+
+Migration 008 was applied to production under explicit approval. Verification accepted HVAC and Beauty & wellness, rejected an unknown type, retained anonymous denial for workspace configuration, and kept baseline counts at four workspaces, zero contacts, and zero tasks.
