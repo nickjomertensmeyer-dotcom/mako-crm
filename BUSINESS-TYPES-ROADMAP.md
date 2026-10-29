@@ -1,6 +1,6 @@
 # Industry expansion roadmap
 
-The current 28 presets select existing CRM tools; they are starting configurations, not full industry-specific software. All items below are proposed future work, not implemented features or current plan promises.
+The 28 presets select CRM tools; they are starting configurations, not full industry-specific software. An unpublished implementation now covers the core of priorities 1–5; see OPERATIONS-RELEASE.md for tested functionality, rollout instructions, and explicit limits. The table below describes the broader roadmap, including capabilities beyond that baseline. Priority 6 remains proposed.
 
 | Priority | Shared feature | Businesses helped | Concrete scope |
 | --- | --- | --- | --- |

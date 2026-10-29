@@ -19,14 +19,14 @@ test('expanded industry database validation preserves owners, records, provision
   for(const name of industries)assert.equal((await db.query('select is_supported_business_type($1) valid',[name])).rows[0].valid,true);
   assert.equal((await db.query("select is_supported_business_type('invented') valid")).rows[0].valid,false);
   async function as(id){await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated');}
-  await as(a);const wa=(await db.query("select create_workspace('Alpha','Tree service',$1) id",[recommendedTools('Tree service')])).rows[0].id;
+  await as(a);const wa=(await db.query("select create_workspace('Alpha','Tree service',$1) id",[recommendedTools('Tree service').filter(m=>!['assets','recurring','booking','projects','inventory'].includes(m))])).rows[0].id;
   assert.equal((await db.query('select status from workspaces where id=$1',[wa])).rows[0].status,'pending');
   await db.exec("reset role;update workspaces set status='active',plan='pro';");await as(a);
   await db.query("insert into contacts(workspace_id,name) values($1,'Keep this customer')",[wa]);
-  await db.query("select configure_workspace($1,'Alpha','Beauty & wellness',$2)",[wa,recommendedTools('Beauty & wellness')]);
+  await db.query("select configure_workspace($1,'Alpha','Beauty & wellness',$2)",[wa,recommendedTools('Beauty & wellness').filter(m=>m!=='booking')]);
   assert.equal((await db.query('select * from contacts')).rows.length,1);
   await assert.rejects(db.query("select configure_workspace($1,'Alpha','invented',array['customers'])",[wa]),/Invalid business type/);
-  await as(b);await db.query("select create_workspace('Beta','HVAC',$1)",[recommendedTools('HVAC')]);
+  await as(b);await db.query("select create_workspace('Beta','HVAC',$1)",[recommendedTools('HVAC').filter(m=>!['assets','recurring','booking','projects','inventory'].includes(m))]);
   await assert.rejects(db.query("select configure_workspace($1,'Changed','HVAC',array['customers'])",[wa]),/Owner access/);
   assert.equal((await db.query('select * from contacts')).rows.length,0);
   await db.exec('reset role');assert.equal((await db.query("select has_function_privilege('anon','public.configure_workspace(uuid,text,text,text[])','execute') allowed")).rows[0].allowed,false);

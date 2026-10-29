@@ -27,3 +27,8 @@
 @keyframes fin-chat-pop{0%{opacity:0;transform:translateY(6px) scale(.92)}75%{opacity:1;transform:translateY(0) scale(1.012)}100%{opacity:1;transform:none}}
 .sharky-chat{animation:fin-chat-pop .23s cubic-bezier(.2,.8,.3,1) both}
 @media print{.sharky-widget,.sharky-nav-button{display:none!important}}
+
+@keyframes fin-button-pop{0%{transform:scale(1)}35%{transform:scale(.88)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
+.sharky-bubble.fin-button-pop{animation:fin-button-pop .3s cubic-bezier(.2,.8,.3,1)}
+@media(prefers-reduced-motion:reduce){.sharky-bubble.fin-button-pop{animation:none}}
+html[data-reduced-motion=true] .sharky-bubble.fin-button-pop{animation:none}

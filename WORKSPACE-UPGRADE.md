@@ -109,3 +109,9 @@ Migration 008 expands industry validation in create_workspace/configure_workspac
 Fifteen automated tests pass, including catalog completeness, compatibility with the original six types, no planned tools in presets, new-industry database acceptance, invalid-industry rejection, owner checks, tenant isolation, and record preservation. Browser checks cover Beauty & wellness selecting four tools, custom selection plus reapply, HVAC selecting seven tools, saved sidebar changes, and persistence after reload.
 
 Migration 008 was applied to production under explicit approval. Verification accepted HVAC and Beauty & wellness, rejected an unknown type, retained anonymous denial for workspace configuration, and kept baseline counts at four workspaces, zero contacts, and zero tasks.
+
+
+## Operations expansion (local, not published)
+Five new optional tools, industry field packs, stock ledger/purchasing, service-plan worker, published appointment slots/cancellation, project costs, and Fin launcher pop. See OPERATIONS-RELEASE.md. Migration 009 prepared and verified in PGlite; not applied to production. 17 tests, typecheck, lint, and production build pass. Browser QA confirms asset edit/archive/restore, purchase receipt, project expense totals, and Fin chat. Customer email reminders, deposits, calendar sync, and recurring billing are excluded.
+
+Migration 009 approved and applied October 29, 2026. Production RLS and worker/guest permissions verified; existing workspace/contact/task counts unchanged. Release proceeding through the existing GitHub/Vercel production pipeline.

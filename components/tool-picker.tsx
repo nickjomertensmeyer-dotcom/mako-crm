@@ -9,6 +9,11 @@ const tools={
   jobs:{label:'Jobs',description:'Keep work moving',icon:BriefcaseBusiness},
   invoices:{label:'Invoices',description:'Invoices and recorded payments',icon:Receipt},
   tasks:{label:'Tasks',description:'Stay on top of next steps',icon:ListChecks},
+  assets:{label:'Service assets',description:'Vehicles, properties, equipment and pets',icon:BriefcaseBusiness},
+  recurring:{label:'Recurring work',description:'Repeating jobs and service plans',icon:CalendarDays},
+  booking:{label:'Online booking',description:'Publish appointment slots',icon:CalendarDays},
+  projects:{label:'Projects & costs',description:'Milestones, time and expenses',icon:ListChecks},
+  inventory:{label:'Inventory & purchasing',description:'Stock ledger, suppliers and orders',icon:Receipt},
   team:{label:'Team',description:'Planned workspace feature',icon:UsersRound},
 };
 export function ToolPicker({selected,onChange}:{selected:readonly string[];onChange:(next:string[])=>void}){

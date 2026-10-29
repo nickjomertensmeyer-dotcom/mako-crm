@@ -4,8 +4,8 @@ import {LayoutDashboard,Users,Target,FileText,CalendarDays,BriefcaseBusiness,Lis
 import {useBusinessIdentity} from './business-identity';
 import {SharkyLaunchButton} from './sharky-assistant';
 import type {Business} from './dashboard';
-const links=[['customers','Customers',Users],['leads','Leads',Target],['quotes','Quotes',FileText],['schedule','Schedule',CalendarDays],['jobs','Jobs',BriefcaseBusiness],['invoices','Invoices',FileText],['tasks','Tasks',ListChecks],['team','Team',Users]] as const;
-const groups=[['Sales',['customers','leads','quotes']],['Work',['tasks','jobs','schedule','team']],['Billing',['invoices']]] as const;
+const links=[['customers','Customers',Users],['leads','Leads',Target],['quotes','Quotes',FileText],['schedule','Schedule',CalendarDays],['jobs','Jobs',BriefcaseBusiness],['invoices','Invoices',FileText],['tasks','Tasks',ListChecks],['assets','Service assets',BriefcaseBusiness],['recurring','Recurring work',CalendarDays],['booking','Online booking',CalendarDays],['projects','Projects & costs',BriefcaseBusiness],['inventory','Inventory',BriefcaseBusiness],['team','Team',Users]] as const;
+const groups=[['Sales',['customers','leads','quotes']],['Work',['tasks','jobs','schedule','assets','recurring','booking','projects','inventory','team']],['Billing',['invoices']]] as const;
 export function WorkspaceNavigation({business,demo=false,current}:{business:Business;demo?:boolean;current:string}){
   const configured=useBusinessIdentity(business,demo),base=demo?'/preview':'/workspace';
   return <nav aria-label="Workspace navigation"><Link className={current==='overview'?'active':''} aria-current={current==='overview'?'page':undefined} href={base}><LayoutDashboard size={19}/>Overview</Link>{groups.map(([section,keys])=>{

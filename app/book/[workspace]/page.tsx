@@ -1,0 +1,3 @@
+import {createClient} from '@supabase/supabase-js';
+import {BookingPage} from '@/components/public-booking';
+export default async function Page({params}:{params:Promise<{workspace:string}>}){const {workspace}=await params;if(!/^[0-9a-f-]{36}$/i.test(workspace))return <main id="main">Booking page unavailable.</main>;const client=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,{auth:{persistSession:false}});const {data,error}=await client.rpc('public_booking_slots',{target:workspace});return <BookingPage slots={data||[]} unavailable={Boolean(error)}/>;}

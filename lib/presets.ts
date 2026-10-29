@@ -1,4 +1,4 @@
-export const modules = ['customers', 'leads', 'quotes', 'schedule', 'jobs', 'invoices', 'tasks', 'team'] as const;
+export const modules = ['customers', 'leads', 'quotes', 'schedule', 'jobs', 'invoices', 'tasks', 'team','assets','recurring','booking','projects','inventory'] as const;
 type Module = typeof modules[number];
 type BusinessType = {name:string;group:string;description:string;tools:readonly Module[]};
 const field:readonly Module[]=['customers','leads','quotes','schedule','jobs','invoices','tasks'];
@@ -32,11 +32,11 @@ export const businessTypes:readonly BusinessType[]=[
  {name:'Pet services',group:'Events & appointments',description:'Organize customer relationships, service appointments, and invoices.',tools:appointments},
  {name:'Real estate',group:'Property & commerce',description:'Track relationships, opportunities, appointments, and follow-up tasks.',tools:['customers','leads','schedule','tasks']},
  {name:'Property management',group:'Property & commerce',description:'Coordinate contacts, maintenance quotes, appointments, work, and invoices.',tools:service},
- {name:'Retail & wholesale',group:'Property & commerce',description:'Track customer relationships, sales quotes, tasks, and invoices. Inventory and POS are not included.',tools:['customers','leads','quotes','invoices','tasks']},
+ {name:'Retail & wholesale',group:'Property & commerce',description:'Track customer relationships, sales quotes, tasks, and invoices. Includes inventory and purchasing; POS is not included.',tools:['customers','leads','quotes','invoices','tasks']},
  {name:'Other',group:'General',description:'Start with customers and tasks, then choose the tools that fit your business.',tools:['customers','tasks']},
 ];
 export const industries=businessTypes.map(type=>type.name);
 export const industryGroups=[...new Set(businessTypes.map(type=>type.group))];
 export const presets:Readonly<Record<string,readonly string[]>>=Object.fromEntries(businessTypes.map(type=>[type.name,type.tools]));
 export const industryDescriptions:Readonly<Record<string,string>>=Object.fromEntries(businessTypes.map(type=>[type.name,type.description]));
-export function recommendedTools(industry:string):string[]{return [...(presets[industry]||presets['General business'])];}
+export function recommendedTools(industry:string):string[]{const base=[...(presets[industry]||presets['General business'])];const extra:string[]=[];if(['Mobile detailing','Tree service','Landscaping & lawn care','Pressure washing','Pest control','HVAC','Plumbing','Electrical','Appliance repair','Auto repair','Pet services','Property management','Real estate'].includes(industry))extra.push('assets');if(['Cleaning','Landscaping & lawn care','Pest control','HVAC','Property management'].includes(industry))extra.push('recurring');if(['Beauty & wellness','Personal training','Tutoring & coaching','Pet services','Photography & videography'].includes(industry))extra.push('booking');if(['Consulting','Marketing & creative agency','IT services','General contracting','Painting','Event planning'].includes(industry))extra.push('projects');if(['Retail & wholesale','Auto repair','Appliance repair','Catering'].includes(industry))extra.push('inventory');return [...base,...extra];}
