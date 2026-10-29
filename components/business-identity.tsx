@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import Link from 'next/link';
+import {WorkspaceLink as Link} from './workspace-link';
 import {useEffect,useState} from 'react';
 import {modules as availableModules} from '@/lib/presets';
 import type {Business} from './dashboard';

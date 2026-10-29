@@ -1,5 +1,5 @@
 'use client';
-import Link from 'next/link';
+import {WorkspaceLink as Link} from './workspace-link';
 import {LayoutDashboard,Users,Target,FileText,CalendarDays,BriefcaseBusiness,ListChecks,Mail} from 'lucide-react';
 import {AssetIcon,RecurringIcon,BookingIcon,ProjectIcon,InventoryIcon} from './tool-icons';
 import {useBusinessIdentity} from './business-identity';
