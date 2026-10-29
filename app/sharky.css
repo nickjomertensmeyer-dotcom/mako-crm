@@ -32,3 +32,5 @@
 .sharky-bubble.fin-button-pop{animation:fin-button-pop .3s cubic-bezier(.2,.8,.3,1)}
 @media(prefers-reduced-motion:reduce){.sharky-bubble.fin-button-pop{animation:none}}
 html[data-reduced-motion=true] .sharky-bubble.fin-button-pop{animation:none}
+
+.fin-coming-soon{display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:10px;letter-spacing:.03em;color:#52648a;background:#f0f4ff;border-bottom:1px solid #dce5f5;flex-shrink:0}.fin-coming-soon>span{width:5px;height:5px;border-radius:50%;background:linear-gradient(135deg,#00c7df,#7040ed)}.app-shell[data-theme=dark] .fin-coming-soon{background:#18283f;color:#c4d4f2;border-color:#344761}
