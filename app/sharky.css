@@ -13,4 +13,17 @@
 .sharky-bubble:focus-visible::before{opacity:1;animation:fin-orbit 1.8s linear infinite}
 .sharky-chat>header{gap:7px;padding:9px 11px}.sharky-chat>header h2{font-size:16px}.sharky-chat>header button{width:28px;height:30px}.sharky-welcome{padding:0 6px 10px}.sharky-welcome h3{font-size:16px;margin-bottom:6px}.sharky-welcome p{font-size:12px}.sharky-notice{padding:8px;font-size:11px}.sharky-suggestions{gap:4px;padding:0 10px 8px}.sharky-suggestions button{font-size:10px;padding:5px 8px}
 @media(max-width:720px){.sharky-welcome>svg{width:40px;height:40px}}
+.fin-launcher{position:fixed;right:20px;bottom:20px;width:64px;height:64px;z-index:97}
+.fin-launcher[hidden]{display:none}
+.fin-launcher>.sharky-bubble{position:absolute;inset:0}
+.fin-tooltip{position:fixed;display:flex;align-items:center;justify-content:center;width:190px;min-height:42px;padding:10px 12px;border:1px solid #476187;border-radius:11px;background:#13233e;color:#edf5ff;box-shadow:0 7px 22px #11203930;font-size:12px;line-height:1.4;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .15s;z-index:99}
+.fin-launcher:focus-within .fin-tooltip{opacity:1;visibility:visible}
+@media(hover:hover){.fin-launcher:hover .fin-tooltip{opacity:1;visibility:visible}}
+.fin-launcher[data-tooltip-dismissed=true] .fin-tooltip{opacity:0;visibility:hidden}
+.fin-launcher[data-chat-open=true] .fin-tooltip{opacity:0;visibility:hidden}
+.fin-hide-launcher{position:absolute;right:-6px;top:-7px;display:grid;place-items:center;width:23px;height:23px;padding:0;border:1px solid #7691b6;border-radius:50%;background:#172a47;color:#e5eeff;z-index:100;cursor:pointer;opacity:0;transition:opacity .15s}
+.fin-launcher:hover .fin-hide-launcher,.fin-launcher:focus-within .fin-hide-launcher{opacity:1}
+@media(hover:none){.fin-hide-launcher{opacity:1}}
+@keyframes fin-chat-pop{0%{opacity:0;transform:translateY(6px) scale(.92)}75%{opacity:1;transform:translateY(0) scale(1.012)}100%{opacity:1;transform:none}}
+.sharky-chat{animation:fin-chat-pop .23s cubic-bezier(.2,.8,.3,1) both}
 @media print{.sharky-widget,.sharky-nav-button{display:none!important}}

@@ -81,3 +81,9 @@ Demo chat uses clearly labeled deterministic sample replies and never calls the 
 ## Fin visual refinement
 
 The assistant display name is now Fin throughout chat, navigation, labels, sample replies, and the server-side identity instruction. Existing internal module names and saved bubble-position keys are retained for compatibility. The desktop panel is reduced to 320 by 440 pixels and still clamps to smaller viewports. A simple fin-and-wave vector replaces the mascot face. A cyan/purple/blue light travels around the launcher border only on hover or keyboard focus; existing device/account reduced-motion preferences disable the rotation. No AI access, billing, or data handling changes accompany this update.
+
+## Fin hover notice, hide controls, and pop animation
+
+Fin uses a minimal single-outline fin icon. A tooltip identifies the launcher as “Fin — your AI assistant” on hover or keyboard focus while chat is closed; Escape dismisses it. An X on the launcher and the chat header hides both chat and launcher, cancels any pending client request, and records the hidden preference in this browser tab’s session storage. The sidebar Fin button remains visible and restores the bubble without opening chat; when already visible it opens chat as before. Hiding does not delete the in-memory conversation. The launcher waits for its saved preference before rendering, avoiding a flash after refresh. Demo reset clears the hidden preference. The chat panel opens with a short pop from the launcher position, honoring existing device/account reduced-motion settings. No server, billing, or database changes are introduced.
+
+Browser QA covers hover/focus notice, header hide, launcher hide, hidden state after refresh, sidebar restore, and pop-animation CSS. Type check, lint, and production build pass.
