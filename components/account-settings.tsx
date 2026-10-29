@@ -1,5 +1,6 @@
 'use client';
 import Image from 'next/image';
+import {SharkyAssistant} from './sharky-assistant';
 import {preparePhoto} from '@/lib/image-client';
 import Link from 'next/link';
 import {createContext,useContext,useEffect,useRef,useState,useTransition,type ReactNode,type MouseEvent} from 'react';
@@ -11,7 +12,7 @@ import {accountSettings,type AccountSettings} from '@/lib/account';
 
 const demoDefaults={...accountSettings({},'alex@example.com'),name:'Alex Morgan'};
 const AccountContext=createContext<{settings:AccountSettings;setSettings:(value:AccountSettings)=>void;demo:boolean}>({settings:demoDefaults,setSettings:()=>{},demo:true});
-export function AccountShell({initial,demo,current,children}:{initial?:AccountSettings;demo:boolean;current:string;children:ReactNode}){
+export function AccountShell({initial,demo,current,children,assistantEnabled=false}:{initial?:AccountSettings;demo:boolean;current:string;children:ReactNode;assistantEnabled?:boolean}){
   const [settings,setSettings]=useState(initial||demoDefaults),[systemDark,setSystemDark]=useState(false),[pending,startTransition]=useTransition();
   const router=useRouter(),lastView=useRef(current);
   useEffect(()=>{if(lastView.current!==current){lastView.current=current;if(!window.location.hash)window.scrollTo({top:0,behavior:'instant'});}},[current]);
@@ -33,7 +34,7 @@ export function AccountShell({initial,demo,current,children}:{initial?:AccountSe
     event.preventDefault();startTransition(()=>router.push(target.pathname+target.search+target.hash,{scroll:false}));
   }
   const dark=settings.appearance==='dark'||(settings.appearance==='system'&&systemDark);
-  return <AccountContext.Provider value={{settings,setSettings:change,demo}}><div className="app-shell" data-theme={dark?'dark':'light'} data-density={settings.density} data-reduced-motion={settings.reducedMotion?'true':'false'} data-navigating={pending?'true':'false'} onClick={navigate}>{children}<span className="navigation-status" role="status" aria-live="polite">{pending?'Loading workspace…':''}</span><span className="sr-only">{current}</span></div></AccountContext.Provider>;
+  return <AccountContext.Provider value={{settings,setSettings:change,demo}}><div className="app-shell" data-theme={dark?'dark':'light'} data-density={settings.density} data-reduced-motion={settings.reducedMotion?'true':'false'} data-navigating={pending?'true':'false'} onClick={navigate}>{children}<SharkyAssistant demo={demo} enabled={assistantEnabled} requested={current==='assistant'}/><span className="navigation-status" role="status" aria-live="polite">{pending?'Loading workspace…':''}</span><span className="sr-only">{current}</span></div></AccountContext.Provider>;
 }
 function Photo({className=''}:{className?:string}){
   const {settings,demo}=useContext(AccountContext);const [failed,setFailed]=useState('');
