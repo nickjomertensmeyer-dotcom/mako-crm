@@ -1,1 +1,28 @@
-{"crons":[{"path":"/api/cron/followups","schedule":"*/10 * * * *"},{"path":"/api/cron/backups","schedule":"17 * * * *"},{"path":"/api/cron/boards","schedule":"*/15 * * * *"},{"path":"/api/cron/operations","schedule":"*/15 * * * *"},{"path":"/api/cron/accounting","schedule":"*/15 * * * *"}]}
+{
+  "crons": [
+    {
+      "path": "/api/cron/followups",
+      "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/cron/backups",
+      "schedule": "17 * * * *"
+    },
+    {
+      "path": "/api/cron/boards",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/operations",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/accounting",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/billing",
+      "schedule": "*/15 * * * *"
+    }
+  ]
+}
