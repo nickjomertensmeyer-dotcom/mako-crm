@@ -5,7 +5,7 @@ import {preparePhoto} from '@/lib/image-client';
 import Link from 'next/link';
 import {createContext,useContext,useEffect,useRef,useState,useTransition,type ReactNode,type MouseEvent} from 'react';
 import {useRouter} from 'next/navigation';
-import {ChevronDown,Settings,Settings2,Palette,LogOut,Check,UserRound} from 'lucide-react';
+import {ChevronDown,Settings,Settings2,Palette,LogOut,Check,UserRound,Link2} from 'lucide-react';
 import {logout} from '@/app/auth/actions';
 import {saveAccountSettings} from '@/app/workspace/account-actions';
 import {accountSettings,type AccountSettings} from '@/lib/account';
@@ -44,7 +44,7 @@ function Photo({className=''}:{className?:string}){
 export function ProfileMenu(){
   const {settings,demo}=useContext(AccountContext),menu=useRef<HTMLDetailsElement>(null);const base=demo?'/preview':'/workspace';
   useEffect(()=>{const close=(event:globalThis.MouseEvent)=>{if(!menu.current?.contains(event.target as Node)&&menu.current)menu.current.open=false;};document.addEventListener('click',close);return()=>document.removeEventListener('click',close);},[]);
-  return <details className="profile-menu" ref={menu} onKeyDown={event=>{if(event.key==='Escape'&&menu.current){menu.current.open=false;menu.current.querySelector('summary')?.focus();}}}><summary aria-label="Open profile menu"><Photo/><ChevronDown size={14}/></summary><div className="profile-dropdown"><strong>{settings.name||'Your account'}</strong><small>{settings.email||'Account preferences'}</small><Link href={`${base}?view=settings`} onClick={()=>{if(menu.current)menu.current.open=false;}}><Settings size={17}/>Settings</Link><Link href={`${base}?view=business-settings`} onClick={()=>{if(menu.current)menu.current.open=false;}}><Settings2 size={17}/>Business settings</Link><Link href={`${base}?view=settings#appearance`} onClick={()=>{if(menu.current)menu.current.open=false;}}><Palette size={17}/>Appearance</Link>{demo?<Link href="/login"><LogOut size={17}/>Exit demo</Link>:<form action={logout}><button type="submit"><LogOut size={17}/>Sign out</button></form>}</div></details>;
+  return <details className="profile-menu" ref={menu} onKeyDown={event=>{if(event.key==='Escape'&&menu.current){menu.current.open=false;menu.current.querySelector('summary')?.focus();}}}><summary aria-label="Open profile menu"><Photo/><ChevronDown size={14}/></summary><div className="profile-dropdown"><strong>{settings.name||'Your account'}</strong><small>{settings.email||'Account preferences'}</small><Link href={`${base}?view=settings`} onClick={()=>{if(menu.current)menu.current.open=false;}}><Settings size={17}/>Settings</Link><Link href={`${base}?view=connections`} onClick={()=>{if(menu.current)menu.current.open=false;}}><Link2 size={17}/>Connections</Link><Link href={`${base}?view=business-settings`} onClick={()=>{if(menu.current)menu.current.open=false;}}><Settings2 size={17}/>Business settings</Link><Link href={`${base}?view=settings#appearance`} onClick={()=>{if(menu.current)menu.current.open=false;}}><Palette size={17}/>Appearance</Link>{demo?<Link href="/login"><LogOut size={17}/>Exit demo</Link>:<form action={logout}><button type="submit"><LogOut size={17}/>Sign out</button></form>}</div></details>;
 }
 export function AccountSettingsPage({owner=false}:{owner?:boolean}){
   const {settings,setSettings,demo}=useContext(AccountContext);const [busy,setBusy]=useState(''),[feedback,setFeedback]=useState({section:'',error:false,text:''});
