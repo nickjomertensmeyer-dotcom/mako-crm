@@ -1,6 +1,7 @@
 import 'server-only';
 import {createClient} from '@supabase/supabase-js';
 import Stripe from 'stripe';
+export function billingTable(){return process.env.STRIPE_LIVE_MODE==='true'?'workspace_live_billing':'workspace_billing';}
 export const billingReady=()=>Boolean(process.env.STRIPE_WEBHOOK_SECRET&&process.env.STRIPE_SECRET_KEY&&process.env.STRIPE_PRO_PRICE_ID&&process.env.STRIPE_PORTAL_CONFIGURATION_ID&&process.env.SUPABASE_SECRET_KEY&&process.env.NEXT_PUBLIC_SITE_URL);
 export function billingClient(){if(!process.env.SUPABASE_SECRET_KEY)throw new Error('Billing not configured');return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.SUPABASE_SECRET_KEY,{auth:{persistSession:false}});}
 export function stripeClient(){
