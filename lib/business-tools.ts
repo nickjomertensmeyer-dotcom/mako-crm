@@ -6,7 +6,7 @@ export type BusinessDocument = {
  issued_date:string;due_date:string;items:LineItem[];tax_bps:number;subtotal_cents:number;
  tax_cents:number;total_cents:number;paid_cents:number;status:string;notes:string;source_quote?:string|null;
 };
-export type WorkItem = {id:string;kind:'Job'|'Appointment';title:string;customer_id:string|null;scheduled_date:string;scheduled_time:string|null;status:string;notes:string};
+export type WorkItem = {id:string;kind:'Job'|'Appointment';title:string;customer_id:string|null;scheduled_date:string;scheduled_time:string|null;status:string;notes:string;archived_at?:string|null};
 export type InvoicePayment = {id:string;invoice_id:string;amount_cents:number;payment_date:string;method:string;reference:string};
 export type SaveResult = {error:string};
 export type BusinessSummary = {invoice_balance:number;overdue:number;paid_total:number;open_quotes:number;upcoming_work:number;contact_customers:number;contact_leads:number;open_tasks:number};

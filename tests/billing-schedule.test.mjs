@@ -1,0 +1,6 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {nextBillingMonth} from '../lib/billing-schedule.ts';
+import {proEntitlement} from '../lib/billing-security.ts';
+test('monthly start clamps short months and keeps UTC time',()=>{for(const [from,to] of [['2027-01-31T12:00:00Z','2027-02-28T12:00:00Z'],['2028-01-31T12:00:00Z','2028-02-29T12:00:00Z'],['2026-12-29T12:00:00Z','2027-01-29T12:00:00Z']])assert.equal(nextBillingMonth(Date.parse(from)/1000),Date.parse(to)/1000);});
+test('onboarding access requires paid setup invoice and unexpired first month',()=>{const s={id:'sub_x',status:'trialing',trial_end:2000000100,livemode:false,cancel_at_period_end:false,latest_invoice:{status:'paid',amount_paid:20000,currency:'usd',lines:{data:[{amount:20000,pricing:{price_details:{price:'setup'}}}]}},items:{data:[{price:{id:'pro'}}]}};assert.equal(proEntitlement([s],'pro',false,'setup',2000000000).active,true);assert.equal(proEntitlement([s],'pro',false,'wrong',2000000000).active,false);assert.equal(proEntitlement([s],'pro',false,'setup',2000000200).active,false);assert.equal(proEntitlement([{...s,latest_invoice:{...s.latest_invoice,amount_paid:0}}],'pro',false,'setup',2000000000).active,false);});

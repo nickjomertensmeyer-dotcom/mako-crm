@@ -55,3 +55,10 @@ export async function changeWorkStatus(form:FormData){
  if(error)back(view,'Could not change this item. Check workspace access.');
  revalidatePath('/workspace');
 }
+export async function setWorkTrash(id:string,restore:boolean):Promise<SaveResult>{
+ const {client,business}=await workspace();
+ if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)||typeof restore!=='boolean')return {error:'Choose a valid work item.'};
+ const {error}=await client.rpc('set_work_item_trash',{target:business.id,item:id,restore});
+ if(error)return {error:'Could not update Trash. Check your active plan, workspace access, and enabled tools.'};
+ revalidatePath('/workspace');return {error:''};
+}
