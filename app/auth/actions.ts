@@ -29,7 +29,11 @@ export async function requestReset(form: FormData) {
   const client = await supabase();
   const origin = process.env.NEXT_PUBLIC_SITE_URL;
   if (!origin) message('/forgot-password', 'Password reset is not configured yet. Contact Mako for help.');
-  await client.auth.resetPasswordForEmail(String(form.get('email') || '').trim(), { redirectTo: `${origin}/auth/callback?next=/reset-password` });
+  const {error}=await client.auth.resetPasswordForEmail(String(form.get('email') || '').trim(), { redirectTo: `${origin}/auth/callback?next=/reset-password` });
+  if(error){
+    console.warn('Mako password reset request failed',{code:error.code||'unknown',status:error.status});
+    message('/forgot-password',error.status===429?'Please wait a few minutes before requesting another reset email.':'We could not request a reset email right now. Try again shortly.');
+  }
   message('/forgot-password', 'If an account exists for that email, you’ll receive a reset link shortly.');
 }
 export async function resetPassword(form: FormData) {
