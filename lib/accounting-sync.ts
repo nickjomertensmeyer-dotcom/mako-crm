@@ -1,3 +1,4 @@
+import {pilotExpired} from './pilot';
 import {connectionComingSoon,quickBooksComingSoonMessage} from './connections-model';
 import 'server-only';
 import {randomUUID} from 'node:crypto';
@@ -10,9 +11,9 @@ type Job={id:string;status:string;remote_id:string|null;source_hash:string;paylo
 export type AccountingSettings={workspace_id:string;owner_id:string;realm_id:string;environment:string;enabled:boolean;automatic:boolean;create_customers:boolean;service_item_id:string;deposit_account_id:string;starts_at:string};
 async function accountingContext(wid:string,uid:string){
  if(connectionComingSoon('quickbooks'))throw new Error(quickBooksComingSoonMessage);
- const db=calendarDatabase();const [business,member,settings]=await Promise.all([db.from('workspaces').select('status,plan,modules,archived_at').eq('id',wid).maybeSingle(),db.from('memberships').select('role').eq('workspace_id',wid).eq('user_id',uid).maybeSingle(),db.from('qb_sync_settings').select('*').eq('workspace_id',wid).maybeSingle()]);
+ const db=calendarDatabase();const [business,member,settings]=await Promise.all([db.from('workspaces').select('status,plan,modules,archived_at,pilot_ends_at').eq('id',wid).maybeSingle(),db.from('memberships').select('role').eq('workspace_id',wid).eq('user_id',uid).maybeSingle(),db.from('qb_sync_settings').select('*').eq('workspace_id',wid).maybeSingle()]);
  if(business.error||member.error)throw new Error('Accounting source access needs its database update.');
- if(!business.data||business.data.archived_at||business.data.status!=='active'||!['pro','custom'].includes(business.data.plan)||!business.data.modules.includes('invoices')||member.data?.role!=='owner')throw new Error('Active owner access and the Invoices tool are required.');
+ if(!business.data||business.data.archived_at||pilotExpired(business.data.pilot_ends_at)||business.data.status!=='active'||!['pro','custom'].includes(business.data.plan)||!business.data.modules.includes('invoices')||member.data?.role!=='owner')throw new Error('Active owner access and the Invoices tool are required.');
  const setting=settings.data as AccountingSettings|null;if(!setting?.enabled||setting.owner_id!==uid)throw new Error('Enable accounting sync and save your mappings first.');
  const credential=await qbCredentials(wid,uid);if(credential.realmId!==setting.realm_id||credential.environment!==setting.environment)throw new Error('The connected company changed. Review and save sync settings again.');
  return {db,credential,setting};

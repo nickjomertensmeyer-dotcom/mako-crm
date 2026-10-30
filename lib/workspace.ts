@@ -1,3 +1,4 @@
+import {pilotExpired} from './pilot';
 import { redirect } from 'next/navigation';
 import { supabase } from './supabase/server';
 export async function identity() {
@@ -13,5 +14,5 @@ export async function workspace() {
   if (!data) redirect('/onboarding');
   const business = Array.isArray(data.workspaces) ? data.workspaces[0] : data.workspaces;
   if (!business) redirect('/setup-required');
-  return { client, user, business, role: data.role };
+  return { client, user, business:pilotExpired(business.pilot_ends_at)?{...business,status:'suspended'}:business, role: data.role };
 }

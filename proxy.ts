@@ -10,4 +10,4 @@ export async function proxy(request: NextRequest) {
   response.headers.set('Cache-Control', 'private, no-store');
   return response;
 }
-export const config = { matcher: ['/workspace/:path*', '/onboarding', '/account/:path*', '/auth/:path*', '/login', '/signup', '/forgot-password', '/reset-password'] };
+export const config = { matcher: ['/pilot', '/workspace/:path*', '/onboarding', '/account/:path*', '/auth/:path*', '/login', '/signup', '/forgot-password', '/reset-password'] };

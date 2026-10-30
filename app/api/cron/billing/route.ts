@@ -7,6 +7,7 @@ export async function GET(request:Request){
  if(!secret||Buffer.byteLength(actual)!==Buffer.byteLength(`Bearer ${secret}`)||!timingSafeEqual(Buffer.from(actual),Buffer.from(`Bearer ${secret}`)))return Response.json({error:'Unauthorized'},{status:401});
  if(!billingReady())return Response.json({error:'Billing not configured'},{status:503});
  const db=billingClient(),bucket=Math.floor(Date.now()/900000),started=Date.now();let checked=0,failed=0,offset=0;
+ const {error:pilotError}=await db.rpc('expire_pilots');if(pilotError)return Response.json({error:'Pilot expiry failed'},{status:503});
  while(true){
   const {data,error}=await db.from(billingTable()).select('workspace_id,stripe_customer_id').not('stripe_customer_id','is',null).order('workspace_id').range(offset,offset+49);
   if(error)return Response.json({error:'Unable to load billing accounts'},{status:503});

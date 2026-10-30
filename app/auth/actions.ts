@@ -1,4 +1,6 @@
 'use server';
+import {cookies} from 'next/headers';
+import {PILOT_COOKIE} from '@/lib/pilot';
 import { redirect } from 'next/navigation';
 import { supabase } from '@/lib/supabase/server';
 import { signupError } from '@/lib/signup-errors';
@@ -13,14 +15,14 @@ export async function signup(form:FormData){
   console.warn('Mako signup failed',{code:error.code||'unknown',status:error.status});
   message('/signup',signupError(error));
  }
- if(data.session)redirect('/onboarding');
+ if(data.session)redirect((await cookies()).get(PILOT_COOKIE)?'/pilot':'/onboarding');
  redirect('/signup?sent=1');
 }
 export async function login(form: FormData) {
   const client = await supabase();
   const { error } = await client.auth.signInWithPassword({ email: String(form.get('email') || '').trim(), password: String(form.get('password') || '') });
   if (error) message('/login', 'We couldn’t sign you in. Check your email and password, or reset your password.');
-  redirect('/workspace');
+  redirect((await cookies()).get(PILOT_COOKIE)?'/pilot':'/workspace');
 }
 export async function logout() { const client = await supabase(); await client.auth.signOut(); redirect('/login'); }
 export async function requestReset(form: FormData) {

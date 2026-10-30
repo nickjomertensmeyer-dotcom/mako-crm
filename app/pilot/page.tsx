@@ -1,0 +1,12 @@
+import {cookies} from 'next/headers';
+import {supabase} from '@/lib/supabase/server';
+import {PILOT_COOKIE,validPilotCode} from '@/lib/pilot';
+import {Brand} from '@/components/brand';
+import {beginPilot,acceptPilot} from './actions';
+export const metadata={title:'Mako Pro pilot invitation',robots:{index:false,follow:false},referrer:'no-referrer' as const};
+export default async function Pilot({searchParams}:{searchParams:Promise<{code?:string;message?:string}>}){
+ const params=await searchParams;const code=params.code||(await cookies()).get(PILOT_COOKIE)?.value||'';
+ const client=await supabase();const {data:{user}}=await client.auth.getUser();
+ const {data:membership}=user?await client.from('memberships').select('workspace_id,role').eq('user_id',user.id).limit(1).maybeSingle():{data:null};
+ return <main id="main" className="onboarding"><Brand/><section className="panel"><p className="eyebrow">INVITATION-ONLY PILOT</p><h1>Try Mako Pro for 14 days.</h1><p>No card required. No automatic subscription or charges. Your 14 days start when you activate this invitation after email verification and workspace setup.</p><p>When the pilot ends, Pro tools pause and your records are retained. You can choose to subscribe for $100 USD/month in Plan &amp; data. Paying starts your monthly subscription immediately.</p><p>Use the email address Mako invited. If you verify on another device, reopen this invitation there after signing in.</p>{params.message&&<p className="notice" role="alert">{params.message}</p>}{!validPilotCode(code)?<p className="notice">Open the invitation link provided by Mako. <a href="mailto:makocrm@gmail.com">Contact Mako</a> for help.</p>:user&&membership?<form action={acceptPilot}><input type="hidden" name="code" value={code}/><p>Signed in as {user.email}. Only the invited workspace owner can activate a pilot.</p><button className="primary" disabled={membership.role!=='owner'}>Activate my free 14-day pilot</button></form>:<form action={beginPilot}><input type="hidden" name="code" value={code}/>{user?<button className="primary" name="destination" value="onboarding">Set up my workspace</button>:<div className="form-actions"><button className="primary" name="destination" value="signup">Create my account</button><button className="secondary" name="destination" value="login">I already have an account</button></div>}</form>}<p><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="/workspace">My workspace</a></p></section></main>;
+}
