@@ -44,3 +44,6 @@
 .sidebar{scrollbar-width:thin;scrollbar-color:#3d5276 transparent}
 
 .billing-cancel-details{max-width:640px}.billing-cancel-details>summary{cursor:pointer;list-style:disclosure-closed}.billing-cancel-details[open]>summary{list-style:disclosure-open}.billing-cancel-details>summary:focus-visible{outline:3px solid var(--cyan);outline-offset:4px}.billing-cancel-details .notice{margin-top:14px}.billing-cancel-details .notice p{font-size:14px;line-height:1.65}
+
+/* Secondary workspace details stay available without crowding primary actions. */
+.workspace-details>summary{cursor:pointer;font-weight:650;line-height:1.5;padding:4px 0;min-height:32px}.workspace-details>summary:focus-visible{outline:3px solid var(--cyan,#00c6df);outline-offset:4px;border-radius:4px}.workspace-details[open]>summary{margin-bottom:16px}.workspace-details .service-grid{margin-top:16px}.connection-privacy{margin-top:24px;border-top:1px solid var(--line);padding-top:16px}.connection-privacy p{max-width:80ch;line-height:1.65}
