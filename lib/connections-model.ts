@@ -25,3 +25,11 @@ export function mailPayload(to:string,subject:string,body:string){
  if(!emailAddress(to)||!subject.trim()||subject.length>200||/[\r\n]/.test(subject)||!body.trim()||body.length>20000)throw new Error('Enter a valid recipient, subject, and message.');
  return `To: ${to}\r\nSubject: =?UTF-8?B?${Buffer.from(subject).toString('base64')}?=\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${Buffer.from(body).toString('base64')}`;
 }
+
+export function contactImportMessage(result:{created:number;skipped:number;restored?:number}){
+ const parts:string[]=[];
+ if(result.created)parts.push(result.created===1?'Contact imported.':`${result.created} contacts imported.`);
+ if(result.restored)parts.push(result.restored===1?'Contact restored.':`${result.restored} contacts restored.`);
+ if(result.skipped)parts.push(result.skipped===1?'Contact already imported.':`${result.skipped} contacts already imported.`);
+ return parts.join(' ')||'No contacts to import.';
+}

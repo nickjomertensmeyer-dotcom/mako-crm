@@ -1,7 +1,7 @@
 import {connectionContext,connectionToken,providerJson} from '@/lib/connections';
 import {boundedBody} from '@/lib/request-body';
 import {calendarConfig,calendarDatabase} from '@/lib/google-calendar';
-import {normalizePerson,mailPayload,type ImportedPerson} from '@/lib/connections-model';
+import {normalizePerson,mailPayload,contactImportMessage,type ImportedPerson} from '@/lib/connections-model';
 export const runtime='nodejs';export const maxDuration=60;
 const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store'}});
 const uuid=(v:unknown):v is string=>typeof v==='string'&&/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(v);
@@ -34,7 +34,7 @@ export async function POST(request:Request){
    if(!Array.isArray(body.ids)||!body.ids.length||body.ids.length>25||body.ids.some((id:unknown)=>typeof id!=='string'||!/^people\/[\w-]{1,256}$/.test(id))||!['Lead','Customer'].includes(body.stage))return json({error:'Choose up to 25 contacts and a destination.'},400);
    const token=await connectionToken('google-contacts',ctx.business.id,ctx.user.id),people:ImportedPerson[]=[];
    for(let offset=0;offset<body.ids.length;offset+=5){const batch=await Promise.all((body.ids.slice(offset,offset+5) as string[]).map(id=>providerJson<Parameters<typeof normalizePerson>[0]>(`https://people.googleapis.com/v1/${id}?personFields=names,emailAddresses,phoneNumbers,organizations`,token)));for(const person of batch){const normalized=normalizePerson(person);if(normalized)people.push(normalized);}}
-   const {data,error}=await ctx.client.rpc('import_connected_contacts',{target:ctx.business.id,source_name:'google-contacts',people,contact_stage:body.stage});if(error)return json({error:'Could not import contacts. Check enabled tools and access.'},400);return json({message:`Imported ${data.created}; ${data.skipped} already linked or matched by email.`});
+   const {data,error}=await ctx.client.rpc('import_connected_contacts',{target:ctx.business.id,source_name:'google-contacts',people,contact_stage:body.stage});if(error)return json({error:'Could not import contacts. Check enabled tools and access.'},400);return json({message:contactImportMessage(data)});
   }
   if(body.action==='send'){
    if(!uuid(body.contactId)||!uuid(body.id)||typeof body.subject!=='string'||typeof body.body!=='string')return json({error:'Check your message fields.'},400);
