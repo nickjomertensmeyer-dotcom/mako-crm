@@ -1,0 +1,18 @@
+"use client";
+import {useEffect,useRef,useState} from 'react';
+import {Search,X} from 'lucide-react';
+import {searchWorkspace} from '@/app/workspace/search-actions';
+import {demoBoards} from '@/lib/demo-boards';
+import type {BoardData} from '@/lib/boards';
+import {useBusinessIdentity} from './business-identity';
+import type {Business} from './dashboard';
+import {WorkspaceLink} from './workspace-link';
+type Result={id:string;label:string;type:string;href:string};
+export function WorkspaceSearch({demo=false,business}:{demo?:boolean;business:Business}){
+ const {modules}=useBusinessIdentity(business,demo);
+ const [open,setOpen]=useState(false),[query,setQuery]=useState(''),[results,setResults]=useState<Result[]>([]),[error,setError]=useState(''),[loading,setLoading]=useState(false);const dialog=useRef<HTMLDialogElement>(null),trigger=useRef<HTMLButtonElement>(null);
+ useEffect(()=>{if(open)dialog.current?.showModal();else dialog.current?.close();},[open]);
+ useEffect(()=>{if(!open)return;let cancelled=false;setResults([]);setError('');if(query.trim().length<2){setLoading(false);return;}setLoading(true);const timer=setTimeout(async()=>{try{if(demo){let data:BoardData=demoBoards();try{const saved=sessionStorage.getItem('mako-board-demo-v1');if(saved)data=JSON.parse(saved);}catch{/* Browser storage is optional. */}const q=query.toLowerCase();const rows:Result[]=[...data.contacts.filter(r=>!r.archived_at&&modules.includes(r.stage==='Lead'?'leads':'customers')).map(r=>({id:r.id,label:String(r.name),type:String(r.stage),href:`/preview?view=${r.stage==='Lead'?'leads':'customers'}&record=${r.id}`})),...data.tasks.filter(r=>!r.archived_at&&modules.includes('tasks')).map(r=>({id:r.id,label:String(r.title),type:'Task',href:`/preview?view=tasks&record=${r.id}`})),...data.documents.filter(r=>r.kind==='Invoice'&&modules.includes('invoices')).map(r=>({id:r.id,label:String(r.number),type:'Invoice',href:`/preview?view=invoices&document=${r.id}`}))];if(!cancelled)setResults(rows.filter(r=>r.label.toLowerCase().includes(q)).slice(0,45));}else{const found=await searchWorkspace(query);if(!cancelled){setResults(found.results);setError(found.error||'');}}}catch{if(!cancelled)setError('Search could not load. Please try again.');}finally{if(!cancelled)setLoading(false);}},250);return()=>{cancelled=true;clearTimeout(timer);};},[query,open,demo,modules]);
+ function close(){setOpen(false);trigger.current?.focus();}
+ return <><button ref={trigger} type="button" className="secondary workspace-search-launch" onClick={()=>setOpen(true)} aria-label="Search workspace"><Search size={17}/><span>Search</span></button><dialog ref={dialog} className="workspace-search-dialog" onCancel={e=>{e.preventDefault();close();}} aria-labelledby="search-title"><header><h2 id="search-title">Search workspace</h2><button className="icon-button" aria-label="Close search" onClick={close}><X/></button></header><label><span className="sr-only">Search customers, leads, tasks, and invoice numbers</span><input autoFocus type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Customers, leads, tasks, invoice numbers…"/></label><p className="small-copy muted">Active records · up to 15 matches per type</p><div aria-live="polite">{loading?'Searching…':error?<p role="alert">{error}</p>:query.trim().length<2?<p>Enter at least 2 characters.</p>:!results.length?<p>No matches. Try a different name or invoice number.</p>:<ul>{results.map(r=><li key={r.type+r.id}><WorkspaceLink href={r.href} onClick={close}><strong>{r.label}</strong><span className="badge">{r.type}</span></WorkspaceLink></li>)}</ul>}</div></dialog></>;
+}

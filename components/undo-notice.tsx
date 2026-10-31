@@ -1,0 +1,5 @@
+"use client";
+import {useEffect,useState} from 'react';
+type Undo={label:string;run:()=>Promise<{error?:string}>};
+export function offerUndo(label:string,run:Undo['run']){window.dispatchEvent(new CustomEvent('mako-undo',{detail:{label,run}}));}
+export function UndoNotice(){const [action,setAction]=useState<Undo|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState('');useEffect(()=>{const show=(event:Event)=>{setAction((event as CustomEvent<Undo>).detail);setError('');};window.addEventListener('mako-undo',show);return()=>window.removeEventListener('mako-undo',show);},[]);if(!action)return null;return <aside className="undo-notice" role="status"><span>{error||action.label}</span><button className="secondary compact" disabled={busy} onClick={async()=>{setBusy(true);try{const result=await action.run();if(result.error)setError(result.error);else setAction(null);}catch{setError('Could not undo. Try again or restore from Trash.');}finally{setBusy(false);}}}>{busy?'Restoring…':'Undo'}</button><button className="icon-button" disabled={busy} aria-label="Dismiss undo notification" onClick={()=>setAction(null)}>×</button></aside>;}

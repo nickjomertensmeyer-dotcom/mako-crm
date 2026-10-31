@@ -1,0 +1,23 @@
+"use client";
+import {useEffect,useRef,useState} from 'react';
+import {usePathname,useSearchParams} from 'next/navigation';
+const baselines=new WeakMap<HTMLFormElement,string>();
+function snapshot(form:HTMLFormElement){return JSON.stringify(Array.from(form.querySelectorAll<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>('input,select,textarea')).filter(el=>el.type!=='hidden').map(el=>[el.name,el instanceof HTMLInputElement&&el.type==='file'?Array.from(el.files||[]).map(f=>[f.name,f.size,f.lastModified]):el instanceof HTMLInputElement&&['checkbox','radio'].includes(el.type)?el.checked:el.value]));}
+export function markFormSaved(form:HTMLFormElement|null){if(form){baselines.set(form,snapshot(form));form.removeAttribute('data-dirty');}}
+function dirtyForms(){return Array.from(document.querySelectorAll<HTMLFormElement>('form[data-protect]')).filter(form=>baselines.has(form)&&baselines.get(form)!==snapshot(form));}
+export function confirmDiscard():Promise<boolean>{if(!dirtyForms().length)return Promise.resolve(true);return new Promise(resolve=>window.dispatchEvent(new CustomEvent('mako-discard',{detail:resolve})));}
+export function UnsavedChanges(){const path=usePathname(),params=useSearchParams();const dialog=useRef<HTMLDialogElement>(null),resolver=useRef<((value:boolean)=>void)|null>(null);const [open,setOpen]=useState(false);
+ useEffect(()=>{const ask=(event:Event)=>{resolver.current?.(false);resolver.current=(event as CustomEvent<(value:boolean)=>void>).detail;setOpen(true);};window.addEventListener('mako-discard',ask);return()=>{window.removeEventListener('mako-discard',ask);resolver.current?.(false);};},[]);
+ useEffect(()=>{if(open)dialog.current?.showModal();else dialog.current?.close();},[open]);
+ function answer(value:boolean){if(value)dirtyForms().forEach(markFormSaved);resolver.current?.(value);resolver.current=null;setOpen(false);}
+
+ useEffect(()=>{const forms=()=>Array.from(document.querySelectorAll<HTMLFormElement>('form[data-protect]'));const register=()=>{for(const form of forms())if(!baselines.has(form))baselines.set(form,snapshot(form));};register();const observer=new MutationObserver(register);observer.observe(document.body,{childList:true,subtree:true});
+ const changed=(event:Event)=>{const form=(event.target as HTMLElement).closest<HTMLFormElement>('form[data-protect]');if(form)form.toggleAttribute('data-dirty',baselines.get(form)!==snapshot(form));};
+ const before=(event:BeforeUnloadEvent)=>{if(forms().some(form=>baselines.has(form)&&baselines.get(form)!==snapshot(form))){event.preventDefault();event.returnValue='';}};
+ const click=(event:MouseEvent)=>{const target=(event.target as HTMLElement).closest<HTMLAnchorElement>('a[href]');if(!target||target.target==='_blank'||target.hasAttribute('download')||event.ctrlKey||event.metaKey||event.shiftKey||event.button!==0)return;const url=new URL(target.href,location.href);if(url.href===location.href||url.protocol==='mailto:')return;if(dirtyForms().length){event.preventDefault();event.stopImmediatePropagation();void confirmDiscard().then(leave=>{if(leave)window.location.assign(url.href);});}};
+ const navigation=(window as Window & {navigation?:{addEventListener:(name:string,handler:(event:Event)=>void)=>void;removeEventListener:(name:string,handler:(event:Event)=>void)=>void;traverseTo:(key:string)=>void}}).navigation;
+ const traverse=(event:Event)=>{const nav=event as Event & {navigationType:string;canIntercept:boolean;destination:{key:string}};if(nav.navigationType==='traverse'&&nav.canIntercept&&dirtyForms().length){event.preventDefault();void confirmDiscard().then(leave=>{if(leave)navigation?.traverseTo(nav.destination.key);});}};
+ navigation?.addEventListener('navigate',traverse);
+ document.addEventListener('input',changed);document.addEventListener('change',changed);document.addEventListener('click',click,true);window.addEventListener('beforeunload',before);
+ return()=>{navigation?.removeEventListener('navigate',traverse);observer.disconnect();document.removeEventListener('input',changed);document.removeEventListener('change',changed);document.removeEventListener('click',click,true);window.removeEventListener('beforeunload',before);};
+ },[path,params]);return <dialog ref={dialog} className="discard-dialog" aria-labelledby="discard-title" onCancel={event=>{event.preventDefault();answer(false);}}><h2 id="discard-title">Leave without saving?</h2><p>Your unsaved changes will be lost.</p><div className="form-actions"><button autoFocus className="primary compact" onClick={()=>answer(false)}>Keep editing</button><button className="secondary" onClick={()=>answer(true)}>Discard changes</button></div></dialog>;}

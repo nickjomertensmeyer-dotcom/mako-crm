@@ -31,7 +31,7 @@ export default async function Page({searchParams}:{searchParams:Promise<{view?:s
  let content=null;
  if(enabled&&['overview','customers','leads','tasks','workflows','notifications'].includes(view)){
   const loaded=await loadBoards(params.record);
-  if(loaded.data)content=<BoardWorkspace initial={loaded.data} current={view} active={active}/>;
+  if(loaded.data)content=<BoardWorkspace modules={business.modules} workspaceId={business.id} initial={loaded.data} current={view} active={active}/>;
   else content=<><p className="notice" role="alert">{loaded.error}</p>{view==='overview'?<Overview business={business} contacts={contacts||[]} tasks={tasks||[]} summary={summary||undefined}/>:['tasks','leads','customers'].includes(view)?<Records view={view} contacts={contacts||[]} tasks={tasks||[]} active={active}/>:null}</>;
  }
 
