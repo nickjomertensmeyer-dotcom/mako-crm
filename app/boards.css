@@ -11,3 +11,15 @@
 /* Pro keeps a quiet, continuous Mako brand glow without motion or layout shifts. */
 .plan-comparison>article.pro-plan-glow{border:2px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,var(--cyan),var(--blue) 48%,var(--purple)) border-box;box-shadow:-7px -5px 24px #00cbe81a,0 6px 26px #2457e81f,8px 6px 26px #793ce626}
 .board-feedback.board-feedback-saved{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid #86cfa4;border-radius:9px;background:#e8f8ee;color:#146b38;font-weight:700;min-height:40px}.app-shell[data-theme=dark] .board-feedback.board-feedback-saved{background:#143d2d;border-color:#347b58;color:#a7f3c5}
+/* Short feedback motions; never delay a save or navigation. */
+@keyframes mako-saved-in{from{opacity:0;transform:translateY(4px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes mako-check-pop{0%{transform:scale(.6)}65%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes mako-panel-in{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+@keyframes mako-complete{from{background:#28c78235}to{background:#28c7820b}}
+.board-feedback-saved{animation:mako-saved-in .2s ease-out}.board-feedback-saved svg{animation:mako-check-pop .24s ease-out}
+.record-dialog[open]{animation:mako-panel-in .22s ease-out}.workspace-search-dialog[open],.discard-dialog[open]{animation:mako-saved-in .2s ease-out}
+.record-board tbody tr>td{transition:background-color .2s,opacity .2s}.record-board tbody tr[data-completed=true]>td{background:#28c7820b;animation:mako-complete .24s ease-out}.record-board tbody tr[data-completed=true] .cell-value{opacity:.8}
+.app-shell .primary,.app-shell .secondary,.app-shell .icon-button{transition:transform .16s cubic-bezier(.2,.8,.2,1),background-color .18s,box-shadow .18s}.app-shell .primary:active:not(:disabled),.app-shell .secondary:active:not(:disabled),.app-shell .icon-button:active:not(:disabled){transform:scale(.97)}
+.sidebar nav a{transition:background-color .18s,color .18s,box-shadow .18s}.sidebar nav a.active{box-shadow:inset 3px 0 var(--cyan)}.mobile-navigation-toggle svg:last-child{transition:transform .18s}.mobile-navigation[data-open=true] .mobile-navigation-toggle svg:last-child{transform:rotate(180deg)}
+@media(prefers-reduced-motion:reduce){.app-shell *,.app-shell *::before,.app-shell *::after{animation:none!important;transition:none!important}}
+.app-shell[data-reduced-motion=true] *,.app-shell[data-reduced-motion=true] *::before,.app-shell[data-reduced-motion=true] *::after{animation:none!important;transition:none!important}

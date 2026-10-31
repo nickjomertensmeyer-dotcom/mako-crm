@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
-import {CalendarDays,CheckCircle2,ChevronDown,ExternalLink,Link2,LoaderCircle,RefreshCw,Unplug} from 'lucide-react';
+import {ConnectionLogo} from './connection-logo';
+import {CheckCircle2,ChevronDown,ExternalLink,Link2,LoaderCircle,RefreshCw,Unplug} from 'lucide-react';
 type Connection={connected:boolean;needsReconnect?:boolean;canDelete?:boolean;timeZone?:string;calendarId?:string;calendars?:{id:string;name:string}[]};
 const announce=()=>window.dispatchEvent(new Event('mako-google-calendar-changed'));
 export function GoogleCalendarConnect({demo=false}:{demo?:boolean}){
@@ -23,7 +24,7 @@ export function GoogleCalendarConnect({demo=false}:{demo?:boolean}){
  }
  const readable=connection.connected&&!connection.needsReconnect;
  return <details className="google-calendar-connect google-calendar-dropdown" open={expanded} onToggle={event=>setExpanded(event.currentTarget.open)} aria-label="Google Calendar connection" aria-busy={loading||Boolean(busy)}>
-  <summary className="google-calendar-heading"><span className="google-calendar-symbol"><CalendarDays size={21}/></span><span className="google-calendar-summary-copy"><strong>Google Calendar → Mako</strong><span className="google-calendar-summary-status">{error?'Connection needs attention':loading?'Checking connection…':readable?<><CheckCircle2 size={13}/> Connected · {connection.canDelete?'event access':'read only'}</>:connection.needsReconnect?'Reconnect to display your Google events':'Connect to display your Google events'}</span></span>{demo&&<span className="badge">Demo</span>}<ChevronDown className="google-calendar-chevron" size={18}/></summary>
+  <summary className="google-calendar-heading"><span className="google-calendar-symbol"><ConnectionLogo app="google-calendar"/></span><span className="google-calendar-summary-copy"><strong>Google Calendar → Mako</strong><span className="google-calendar-summary-status">{error?'Connection needs attention':loading?'Checking connection…':readable?<><CheckCircle2 size={13}/> Connected · {connection.canDelete?'event access':'read only'}</>:connection.needsReconnect?'Reconnect to display your Google events':'Connect to display your Google events'}</span></span>{demo&&<span className="badge">Demo</span>}<ChevronDown className="google-calendar-chevron" size={18}/></summary>
   <div className="google-calendar-dropdown-body">
   <div className="google-calendar-controls">
    {!readable&&<label>Display time zone<select value={zone} onChange={event=>setZone(event.target.value)} disabled={loading||Boolean(busy)}>{zones.map(value=><option key={value} value={value}>{value.replaceAll('_',' ')}</option>)}</select></label>}
