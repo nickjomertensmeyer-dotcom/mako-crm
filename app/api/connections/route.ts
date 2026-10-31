@@ -3,7 +3,7 @@ import {connectionContext,startGoogleConnection} from '@/lib/connections';
 import {boundedBody} from '@/lib/request-body';
 import {qbReady,startQuickBooks} from '@/lib/quickbooks';
 import {calendarConfig,calendarDatabase} from '@/lib/google-calendar';
-import {connectionApps,appDefinition,connectionComingSoon,quickBooksComingSoonMessage} from '@/lib/connections-model';
+import {connectionApps,appDefinition,connectionComingSoon} from '@/lib/connections-model';
 export const runtime='nodejs';
 const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store'}});
 export async function GET(){
@@ -23,7 +23,7 @@ export async function POST(request:Request){
   if(error)return json({error:'Could not disconnect. Try again.'},503);
   return json({message:`${definition.name} disconnected from this workspace. Existing records and source files are unchanged. Revoke the app in your provider account to remove provider-side permission.`});
  }
- if(body.action==='connect'&&connectionComingSoon(definition.id))return json({error:quickBooksComingSoonMessage},503);
+ if(body.action==='connect'&&connectionComingSoon(definition.id))return json({error:`${definition.name} connections are coming soon.`},503);
  if(body.action==='connect'&&(definition.scope||definition.id==='quickbooks')){if(ctx.business.archived_at||ctx.business.status!=='active'||!['pro','custom'].includes(ctx.business.plan))return json({error:'Activate your plan before connecting apps.'},403);if(definition.id==='quickbooks'&&ctx.role!=='owner')return json({error:'Only the workspace owner can connect accounting.'},403);try{return json({url:definition.id==='quickbooks'?await startQuickBooks(ctx.business.id,ctx.user.id):await startGoogleConnection(definition.id,ctx.business.id,ctx.user.id)});}catch(error){return json({error:error instanceof Error?error.message:'Could not start connection. Check application setup.'},503);}}
  return json({error:'This provider needs application setup before it can be connected.'},503);
 }
