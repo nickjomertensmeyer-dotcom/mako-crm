@@ -11,8 +11,8 @@
 .mako-home .marketing-header nav a:active{transform:translateY(0)}
 @media(max-width:760px){.mako-home .marketing-header nav{gap:8px}.mako-home .marketing-header nav a:not(.primary){padding:0 12px;font-size:13px}.mako-home .marketing-header nav a[href="/login"]{margin-left:0}.mako-home .marketing-header nav .primary{margin-left:0}}
 @media(prefers-reduced-motion:reduce){.mako-home .marketing-header nav a:not(.primary){transition:none;transform:none}}
-.mako-home .marketing-header nav a{position:relative;overflow:hidden;isolation:isolate}
-.mako-home .marketing-header nav a::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 15%,#00cbe825 38%,#2454ef20 50%,#793ce628 62%,transparent 85%);transform:translateX(-130%);opacity:0}
-.mako-home .marketing-header nav a:hover::after,.mako-home .marketing-header nav a:focus-visible::after{animation:home-nav-highlight .55s ease-out}
+.mako-home :is(.marketing-header nav a,.primary,.secondary){position:relative;overflow:hidden;isolation:isolate}
+.mako-home :is(.marketing-header nav a,.primary,.secondary)::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 15%,#00cbe825 38%,#2454ef20 50%,#793ce628 62%,transparent 85%);transform:translateX(-130%);opacity:0}
+.mako-home :is(.marketing-header nav a,.primary,.secondary):hover::after,.mako-home :is(.marketing-header nav a,.primary,.secondary):focus-visible::after{animation:home-nav-highlight .55s ease-out}
 @keyframes home-nav-highlight{0%{transform:translateX(-130%);opacity:0}25%{opacity:1}100%{transform:translateX(130%);opacity:0}}
-@media(prefers-reduced-motion:reduce){.mako-home .marketing-header nav a:hover::after,.mako-home .marketing-header nav a:focus-visible::after{animation:none}}
+@media(prefers-reduced-motion:reduce){.mako-home :is(.marketing-header nav a,.primary,.secondary):hover::after,.mako-home :is(.marketing-header nav a,.primary,.secondary):focus-visible::after{animation:none}}
