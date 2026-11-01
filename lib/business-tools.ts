@@ -1,7 +1,8 @@
+import type {DocumentDesign} from './document-design';
 export type CustomerOption = {id:string;name:string;company?:string;email?:string;phone?:string};
 export type LineItem = {description:string;quantity:number;unit_cents:number;total_cents:number};
 export type BusinessDocument = {
- id:string;kind:'Invoice'|'Quote';number:string;customer_id:string|null;
+ design?:DocumentDesign;id:string;kind:'Invoice'|'Quote';number:string;customer_id:string|null;
  customer:{name:string;company?:string;email?:string;phone?:string};issuer:string;
  issued_date:string;due_date:string;items:LineItem[];tax_bps:number;subtotal_cents:number;
  tax_cents:number;total_cents:number;paid_cents:number;status:string;notes:string;source_quote?:string|null;

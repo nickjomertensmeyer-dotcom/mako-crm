@@ -12,7 +12,7 @@ test('documents, receipts, and work items enforce tenant isolation and financial
  const db=new PGlite();const A='10000000-0000-4000-8000-000000000001',B='10000000-0000-4000-8000-000000000002';
  try{
   await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth,public to authenticated,anon,service_role;grant execute on function auth.uid() to authenticated,anon;insert into auth.users values('${A}'),('${B}');`);
-  for(const name of ['202610280001_foundation','202610280002_pro_tools','202610280003_backups','202610280004_business_tools'])await db.exec(await readFile(new URL(`../supabase/migrations/${name}.sql`,import.meta.url),'utf8'));
+  for(const name of ['202610280001_foundation','202610280002_pro_tools','202610280003_backups','202610280004_business_tools','202610310029_document_design'])await db.exec(await readFile(new URL(`../supabase/migrations/${name}.sql`,import.meta.url),'utf8'));
   async function as(user){await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[user]);await db.exec('set role authenticated');}
   const mods="array['customers','tasks','quotes','invoices','jobs','schedule']";
   await as(A);const wa=(await db.query(`select public.create_workspace('Business A','Other',${mods}) id`)).rows[0].id;
@@ -30,12 +30,21 @@ test('documents, receipts, and work items enforce tenant isolation and financial
   await assert.rejects(save(wa,ca,'Invoice',null,[]),/1 to 30/);
   await assert.rejects(save(wa,ca,'Invoice',null,[{description:'Too large',quantity:'10000',unit_cents:100000000}]),/Total must/);
   const invoice=await save(wa,ca);
+  const styled=(target,id,customer,design)=>db.query('select public.save_designed_document($1,$2,$3,$4,current_date,current_date+30,$5::jsonb,750,$6,$7::jsonb) id',[target,id,'Invoice',customer,JSON.stringify([{description:'Service',quantity:'1.5',unit_cents:1999}]),'Thank you.',JSON.stringify(design)]);
+  await styled(wa,invoice,ca,{color:'#00cbe8',reference:'PO-42',billing_address:'123 Example Lane'});
+  assert.equal((await db.query('select design from public.business_documents where id=$1',[invoice])).rows[0].design.reference,'PO-42');
+  await assert.rejects(styled(wb,invoice,cb,{color:'#00cbe8'}),/Active Pro/);
+  await assert.rejects(styled(wa,invoice,ca,{logo:'https://untrusted.invalid/logo.svg'}),/Invalid logo/);
+  await assert.rejects(styled(wa,invoice,ca,{color:'red;display:none'}),/Invalid border/);
+  await assert.rejects(styled(wa,invoice,ca,{reference:'x'.repeat(121)}),/too long/);
+  await assert.rejects(styled(wa,invoice,ca,{arbitrary:'value'}),/Invalid document field/);
   let d=(await db.query('select * from public.business_documents')).rows[0];
   assert.equal(Number(d.subtotal_cents),2999);assert.equal(Number(d.tax_cents),225);assert.equal(Number(d.total_cents),3224);assert.equal(d.number,'INV-000001');
   await assert.rejects(db.query(`update public.business_documents set total_cents=1`),/permission denied/);
   await assert.rejects(db.query(`insert into public.invoice_payments(workspace_id,invoice_id,amount_cents,payment_date,method,request_id) values('${wa}','${invoice}',1,current_date,'Cash',gen_random_uuid())`),/permission denied/);
   await db.query(`select public.change_document_status('${wa}','${invoice}','Issued')`);
   await assert.rejects(save(wa,ca,'Invoice',invoice),/Only drafts/);
+  await assert.rejects(styled(wa,invoice,ca,{color:'#2454ef'}),/Only drafts/);
   const request='20000000-0000-4000-8000-000000000001';
   const pay=()=>db.query(`select public.record_invoice_payment('${wa}','${invoice}',1000,current_date,'Cash','Deposit','${request}')`);
   await pay();await pay();
@@ -48,10 +57,12 @@ test('documents, receipts, and work items enforce tenant isolation and financial
   await db.query(`select public.record_invoice_payment('${wa}','${invoice}',2224,current_date,'Cash','',gen_random_uuid())`);
   assert.equal((await db.query(`select status from public.business_documents where id='${invoice}'`)).rows[0].status,'Paid');
   const quote=await save(wa,ca,'Quote');
+  await db.query('select public.save_designed_document($1,$2,$3,$4,current_date,current_date+30,$5::jsonb,0,$6,$7::jsonb)',[wa,quote,'Quote',ca,JSON.stringify([{description:'Service',quantity:'1',unit_cents:2000}]),'',JSON.stringify({color:'#793ce6',reference:'QUOTE-PO'})]);
   await assert.rejects(db.query(`select public.convert_quote_to_invoice('${wa}','${quote}')`),/Accept the quote/);
   await db.exec(`select public.change_document_status('${wa}','${quote}','Issued');select public.change_document_status('${wa}','${quote}','Accepted')`);
   const converted=(await db.query(`select public.convert_quote_to_invoice('${wa}','${quote}') id`)).rows[0].id;
   assert.equal((await db.query(`select public.convert_quote_to_invoice('${wa}','${quote}') id`)).rows[0].id,converted,'conversion retries return the same invoice');
+  assert.equal((await db.query('select design from public.business_documents where id=$1',[converted])).rows[0].design.reference,'QUOTE-PO');
   await db.query(`select public.save_work_item('${wa}',null,'Job','Customer A job','${ca}',current_date,'09:30','Project notes')`);
   await assert.rejects(db.query(`select public.save_work_item('${wa}',null,'Job','Injected','${cb}',current_date,null,'')`),/customer from this workspace/);
   const job=(await db.query('select id from public.work_items')).rows[0].id;

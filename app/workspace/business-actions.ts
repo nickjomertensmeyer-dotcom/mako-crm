@@ -1,4 +1,5 @@
 'use server';
+import {documentFields,validateDocumentDesign,type DocumentDesign} from '@/lib/document-design';
 import {workspace} from '@/lib/workspace';
 import {decimalCents,type SaveResult} from '@/lib/business-tools';
 import {revalidatePath} from 'next/cache';
@@ -20,7 +21,11 @@ export async function saveDocument(_:SaveResult,form:FormData):Promise<SaveResul
  if(bps===null||bps>10000)return {error:'Enter a tax percentage between 0 and 100.'};
  if(!value(form,'customer_id'))return {error:'Choose a customer first.'};
  if(!/^\d{4}-\d{2}-\d{2}$/.test(value(form,'date'))||!/^\d{4}-\d{2}-\d{2}$/.test(value(form,'due_date'))||value(form,'due_date')<value(form,'date'))return {error:'The due or expiry date must be on or after the document date.'};
- const {data,error}=await client.rpc('save_business_document',{target:business.id,item_id:value(form,'id')||null,document_kind:kind,customer_uuid:value(form,'customer_id'),document_date:value(form,'date'),deadline:value(form,'due_date'),line_items:items,tax_rate_bps:bps,memo:value(form,'notes')});
+ if(value(form,'design_preparing')==='1')return {error:'Please wait for your logo to finish preparing.'};
+ const design:DocumentDesign={color:value(form,'design_color'),logo:value(form,'design_logo')};
+ for(const [key] of documentFields)design[key]=value(form,'design_'+key);
+ const designError=validateDocumentDesign(design);if(designError)return {error:designError};
+ const {data,error}=await client.rpc('save_designed_document',{target:business.id,item_id:value(form,'id')||null,document_kind:kind,customer_uuid:value(form,'customer_id'),document_date:value(form,'date'),deadline:value(form,'due_date'),line_items:items,tax_rate_bps:bps,memo:value(form,'notes'),presentation:design});
  if(error)return {error:'Could not save. Confirm your plan is active, the tool is enabled, and the pre-tax total is $0.01–$1,000,000. Issued documents cannot be edited.'};
  revalidatePath('/workspace');back(kind==='Invoice'?'invoices':'quotes','Draft saved.',data);
 }
