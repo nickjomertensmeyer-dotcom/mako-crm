@@ -1,5 +1,5 @@
 import type {DocumentDesign} from './document-design';
-export type CustomerOption = {id:string;name:string;company?:string;email?:string;phone?:string};
+export type CustomerOption = {id:string;name:string;company?:string;email?:string;phone?:string;archived_at?:string|null};
 export type LineItem = {description:string;quantity:number;unit_cents:number;total_cents:number};
 export type BusinessDocument = {
  design?:DocumentDesign;id:string;kind:'Invoice'|'Quote';number:string;customer_id:string|null;
@@ -25,4 +25,9 @@ export function previewTotals(items:{quantity:string;price:string}[],tax:string)
  },0);
  const bps=decimalCents(tax)??0;const taxCents=Math.round(subtotal*bps/10000);
  return {subtotal,tax:taxCents,total:subtotal+taxCents};
+}
+
+// Preserve historical links when editing, but exclude archived contacts from new links.
+export function selectableContacts(contacts:CustomerOption[],currentId?:string|null){
+ return contacts.filter(contact=>!contact.archived_at||contact.id===currentId);
 }

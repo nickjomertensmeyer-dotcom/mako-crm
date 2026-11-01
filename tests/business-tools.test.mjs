@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
-import {decimalCents,previewTotals} from '../lib/business-tools.ts';
+import {decimalCents,previewTotals,selectableContacts} from '../lib/business-tools.ts';
 test('money inputs and preview use cents and reject invalid decimals',()=>{
  assert.equal(decimalCents('19.99'),1999);assert.equal(decimalCents('0.01'),1);
  for(const input of ['-1','NaN','1e4','2.345','','Infinity'])assert.equal(decimalCents(input),null);
@@ -81,4 +81,12 @@ test('documents, receipts, and work items enforce tenant isolation and financial
   await assert.rejects(db.query('select * from public.business_documents'),/permission denied/);
   await assert.rejects(db.query(`select public.workspace_business_summary('${wa}')`),/permission denied/);
  }finally{await db.close();}
+});
+
+test('archived contacts are offered only for their existing link',()=>{
+ const contacts=[{id:'active',name:'Active',archived_at:null},{id:'legacy',name:'Legacy'},{id:'archived',name:'Archived',archived_at:'2026-11-01'},{id:'other',name:'Other',archived_at:'2026-11-01'}];
+ assert.deepEqual(selectableContacts(contacts).map(c=>c.id),['active','legacy']);
+ assert.deepEqual(selectableContacts(contacts,'archived').map(c=>c.id),['active','legacy','archived']);
+ assert.deepEqual(selectableContacts(contacts,'active').map(c=>c.id),['active','legacy']);
+ assert.equal(contacts.length,4);
 });
