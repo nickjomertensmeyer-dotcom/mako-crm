@@ -1,3 +1,4 @@
+import {decimalCents,money} from '@/lib/business-tools';
 import {unstable_rethrow} from 'next/navigation';
 import {billingClient,billingOrigin,stripeClient} from '@/lib/billing';
 import {merchantContext,merchantRecord,merchantStatus,connectLive,connectError} from '@/lib/stripe-connect';
@@ -16,7 +17,7 @@ export async function POST(request:Request){
   const db=billingClient(),stripe=stripeClient(),live=connectLive();
   const current=await db.from('invoice_checkouts').select('*').eq('workspace_id',ctx.business.id).eq('invoice_id',body.invoiceId).in('state',['creating','open','pending']).maybeSingle();
   if(current.error)throw new Error('Could not check existing checkout.');
-  const old=current.data;
+  const old=current.data;const deposit=body.deposit===undefined?null:typeof body.deposit==='string'?decimalCents(body.deposit):null;if(body.deposit!==undefined&&(deposit===null||deposit<50))return json({error:'Enter a deposit of at least $0.50.'},400);if(old&&body.action==='create'&&deposit!==null&&Number(old.amount_cents)!==deposit)return json({error:'Close the current payment link before changing its amount.'},409);
   if(old?.live!==undefined&&old.live!==live)throw new Error('Resolve the checkout in its original Stripe environment.');
   if(old?.session_id){
    let session=await stripe.checkout.sessions.retrieve(old.session_id,{}, {stripeAccount:old.account_id});
@@ -25,17 +26,17 @@ export async function POST(request:Request){
     const updated=await db.from('invoice_checkouts').update({state:'expired'}).eq('id',old.id).in('state',['creating','open']);if(updated.error)throw new Error('Could not close checkout.');
     if(body.action==='expire')return json({message:'Payment link closed. You can now change the invoice or record a manual payment.'});
    }else if(session.status==='complete')return json({message:'Payment submitted. Awaiting Stripe confirmation; refresh the invoice shortly.'});
-   else if(body.action==='create')return json({url:session.url,message:'Existing payment link ready.'});
+   else if(body.action==='create')return json({url:session.url,message:`Existing payment link for ${money(Number(old.amount_cents))} ready.`});
   }else if(body.action==='expire')return json({error:old?'Checkout creation is unfinished. Retry creating the link first.':'No open payment link.'},409);
   if(body.action==='expire')return json({error:'Pending payments cannot be cancelled here.'},409);
   if(!(await merchantStatus(ctx.business.id)).ready)throw new Error('Finish Stripe setup in Connections before collecting invoice payments.');
   const account=await merchantRecord(ctx.business.id);
-  const reserved=await db.rpc('reserve_invoice_checkout',{target:ctx.business.id,item:body.invoiceId,merchant:account!.account_id,is_live:live});
+  const reserved=await db.rpc(deposit===null?'reserve_invoice_checkout':'reserve_invoice_deposit',{target:ctx.business.id,item:body.invoiceId,merchant:account!.account_id,is_live:live,...(deposit===null?{}:{requested_cents:deposit})});
   if(reserved.error)throw new Error('Could not reserve this invoice. It must be finalized, unpaid, and available.');
   const attempt=reserved.data;if(!attempt?.id)throw new Error('Could not prepare checkout.');
   if(Date.now()-new Date(attempt.created_at).getTime()>23*3600000)throw new Error('Mako must review this unfinished payment link before retrying.');
   const session=await stripe.checkout.sessions.create({mode:'payment',integration_identifier:'mako_invoice_rqmfkzpa',
-   line_items:[{quantity:1,price_data:{currency:attempt.currency,unit_amount:Number(attempt.amount_cents),product_data:{name:`Invoice ${invoice.data.number}`,description:'Outstanding invoice balance, including any tax recorded on the invoice.'}}}],
+   line_items:[{quantity:1,price_data:{currency:attempt.currency,unit_amount:Number(attempt.amount_cents),product_data:{name:`Invoice ${invoice.data.number}`,description:deposit===null?'Outstanding invoice balance, including any tax recorded on the invoice.':'Partial payment or deposit toward the invoice total.'}}}],
    metadata:{mako_checkout:attempt.id},client_reference_id:attempt.id,
    success_url:`${billingOrigin()}/payment-result?result=submitted`,cancel_url:`${billingOrigin()}/payment-result?result=cancelled`,
   },{stripeAccount:attempt.account_id,idempotencyKey:`mako-invoice-${attempt.id}`});

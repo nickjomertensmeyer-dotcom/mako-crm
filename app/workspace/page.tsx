@@ -16,7 +16,7 @@ import {Dashboard,Overview} from '@/components/dashboard';
 import {Records} from '@/components/records';
 import {Documents,WorkBoard} from '@/components/business-tools';
 import {redirect} from 'next/navigation';
-export default async function Page({searchParams}:{searchParams:Promise<{view?:string;message?:string;document?:string;new?:string;edit?:string;editWork?:string;record?:string}>}){
+export default async function Page({searchParams}:{searchParams:Promise<{view?:string;message?:string;document?:string;new?:string;edit?:string;reviewFor?:string;editWork?:string;record?:string}>}){
  const {client:authClient}=await identity();const {data:isAdmin}=await authClient.rpc('is_platform_admin');if(isAdmin)redirect('/owner');
  const {client,user,business,role}=await workspace();const params=await searchParams;const {view='overview',message}=params;
  if(business.archived_at)return <main id="main" className="onboarding"><section className="panel"><h1>This business has been archived.</h1><p>Your records are retained, but workspace access is disabled. Contact Mako to request restoration. Archiving does not cancel any subscription.</p><a href="mailto:makocrm@gmail.com">Contact Mako</a><SubscriptionPanel/><p><a href="/login">Back to login</a></p></section></main>;
@@ -54,7 +54,7 @@ export default async function Page({searchParams}:{searchParams:Promise<{view?:s
   if(editResult.data&&!items.some(i=>i.id===editResult.data.id))items.push(editResult.data);
   content=<>{error&&<p className="notice" role="alert">Some schedule data could not be loaded. Refresh or contact Mako to check database updates.</p>}<WorkBoard view={view} items={items} trashed={trashResult.data||[]} contacts={contacts||[]} enabled={active&&!error} editId={params.editWork}/></>;
  }
- if(view==='followups'){const {data,error}=await client.from('email_followups').select('*').eq('workspace_id',business.id).order('scheduled_at',{ascending:false}).limit(100);content=<>{error&&<p className="notice">Follow-up database setup is pending. Contact Mako to apply the Pro tools update.</p>}<Followups contacts={contacts||[]} items={data||[]} enabled={active&&emailReady&&!error} owner={role==='owner'}/></>;}
+ if(view==='followups'){const {data,error}=await client.from('email_followups').select('*').eq('workspace_id',business.id).order('scheduled_at',{ascending:false}).limit(100);content=<>{error&&<p className="notice">Follow-up database setup is pending. Contact Mako to apply the Pro tools update.</p>}<Followups reviewCustomer={params.reviewFor} contacts={contacts||[]} items={data||[]} enabled={active&&emailReady&&!error} owner={role==='owner'}/></>;}
  if(view==='support'){const {data,error}=await client.from('support_requests').select('*').eq('workspace_id',business.id).order('created_at',{ascending:false}).limit(100);content=<>{error&&<p className="notice">Support database setup is pending. You can still email makocrm@gmail.com.</p>}<Support tickets={data||[]} active={active&&!error}/></>;}
  if(view==='assistant')content=<Assistant enabled={active&&aiReady}/>;
  if(view==='plan'){const {data:backups}=await client.from('workspace_backups').select('id,day,status').eq('workspace_id',business.id).order('day',{ascending:false}).limit(15);content=<Plan plan={business.plan} owner={role==='owner'} email={emailReady} ai={aiReady} backups={backups||[]} backupEnabled={process.env.BACKUPS_ENABLED==='true'&&Boolean(process.env.SUPABASE_SECRET_KEY&&process.env.CRON_SECRET)}/>;}
