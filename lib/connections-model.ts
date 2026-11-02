@@ -4,7 +4,7 @@ export const connectionApps=[
  {id:'gmail',name:'Gmail',category:'Email',description:'Send customer emails from your connected Gmail account.',permission:'Send email on your behalf',scope:'https://www.googleapis.com/auth/gmail.send'},
  {id:'google-drive',name:'Google Drive',category:'Files',description:'Upload files through Mako and link them to customer records.',permission:'Files created or opened through Mako',scope:'https://www.googleapis.com/auth/drive.file'},
  {id:'outlook',comingSoon:true,name:'Microsoft Outlook',category:'Email & schedule',description:'Microsoft email, contacts, and calendar connections are coming soon.',permission:'Not yet available',scope:''},
- {id:'quickbooks',comingSoon:true,name:'QuickBooks Online',category:'Accounting',description:'Connect your accounting to Mako. QuickBooks invoice and payment syncing is coming soon.',permission:'Available after production approval',scope:''},
+ {id:'quickbooks',name:'QuickBooks Online',category:'Accounting',description:'Connect your company, then choose whether to sync eligible invoices and recorded payments.',permission:'QuickBooks accounting access · Sync requires setup',scope:''},
  {id:'stripe',name:'Stripe',category:'Customer payments',description:'Receive invoice payments directly into your business’s Stripe account.',permission:'Separate from your Mako subscription',scope:''},
  {id:'sms',comingSoon:true,name:'Text reminders',category:'Messaging',description:'Opt-in appointment and follow-up text reminders are coming soon.',permission:'Not yet available',scope:''}
 ] as const;
