@@ -25,12 +25,12 @@ export default async function Page({searchParams}:{searchParams:Promise<{view?:s
   canContacts?client.from('contacts').select('*',{count:'exact'}).eq('workspace_id',business.id).order('created_at',{ascending:false}).limit(1000):Promise.resolve({data:[],error:null,count:0}),
   business.modules.includes('tasks')?client.from('tasks').select('*',{count:'exact'}).eq('workspace_id',business.id).order('created_at',{ascending:false}).limit(1000):Promise.resolve({data:[],error:null,count:0}),
   view==='overview'||view==='invoices'?client.rpc('workspace_business_summary',{target:business.id}):Promise.resolve({data:null})]);
- const enabled=['overview','followups','assistant','support','plan','workflows','notifications','settings','business-settings','connections'].includes(view)||business.modules.includes(view);
+ const enabled=['overview','attention','followups','assistant','support','plan','workflows','notifications','settings','business-settings','connections'].includes(view)||business.modules.includes(view);
  const emailReady=Boolean(process.env.RESEND_API_KEY&&process.env.FOLLOWUP_FROM_EMAIL&&process.env.SUPABASE_SECRET_KEY&&process.env.CRON_SECRET);
  const aiReady=Boolean(process.env.OPENAI_API_KEY&&process.env.OPENAI_MODEL);
  const active=business.status==='active'&&['pro','custom'].includes(business.plan);
  let content=null;
- if(enabled&&['overview','customers','leads','tasks','workflows','notifications'].includes(view)){
+ if(enabled&&['overview','attention','customers','leads','tasks','workflows','notifications'].includes(view)){
   const loaded=await loadBoards(params.record);
   if(loaded.data)content=<BoardWorkspace modules={business.modules} workspaceId={business.id} initial={loaded.data} current={view} active={active}/>;
   else content=<><p className="notice" role="alert">{loaded.error}</p>{view==='overview'?<Overview business={business} contacts={contacts||[]} tasks={tasks||[]} summary={summary||undefined}/>:['tasks','leads','customers'].includes(view)?<Records view={view} contacts={contacts||[]} tasks={tasks||[]} active={active}/>:null}</>;
@@ -42,7 +42,7 @@ export default async function Page({searchParams}:{searchParams:Promise<{view?:s
   // Fetch selected records independently of the recent-record list, with the same tenant restrictions.
   const {data:selected}=params.document?await client.from('business_documents').select('*').eq('workspace_id',business.id).eq('kind',kind).eq('id',params.document).maybeSingle():{data:null};
   const {data:payments}=selected&&kind==='Invoice'?await client.from('invoice_payments').select('*').eq('workspace_id',business.id).eq('invoice_id',selected.id).order('payment_date',{ascending:false}):{data:[]};
-  content=<>{error&&<p className="notice">Business tools need a database update. Mako must apply migration 004 before documents can be saved.</p>}{params.document&&!selected&&<p className="notice">This document is unavailable or you do not have access to it.</p>}<Documents kind={kind} documents={documents||[]} contacts={contacts||[]} selected={selected||undefined} payments={payments||[]} create={params.new==='1'} edit={params.edit==='1'} enabled={active&&!error} summary={summary||undefined}/></>;
+  content=<>{error&&<p className="notice">Business tools need a database update. Mako must apply migration 004 before documents can be saved.</p>}{params.document&&!selected&&<p className="notice">This document is unavailable or you do not have access to it.</p>}<Documents jobsEnabled={business.modules.includes('jobs')} kind={kind} documents={documents||[]} contacts={contacts||[]} selected={selected||undefined} payments={payments||[]} create={params.new==='1'} edit={params.edit==='1'} enabled={active&&!error} summary={summary||undefined}/></>;
  }
  if(enabled&&(view==='jobs'||view==='schedule')){
   const today=new Date().toISOString().slice(0,10);const kinds=view==='jobs'?['Job']:['Job','Appointment'];

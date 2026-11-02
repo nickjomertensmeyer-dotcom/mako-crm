@@ -10,7 +10,15 @@ export async function GET(request:Request){
  const {data:items,error}=await client.rpc('claim_followups');if(error)return Response.json({error:'Queue unavailable'},{status:503});
  let sent=0,failed=0;
  for(const item of items||[]){
-  try{const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${apiKey}`,'Content-Type':'application/json','Idempotency-Key':`mako-followup-${item.id}`},body:JSON.stringify({from,to:[item.recipient],subject:item.subject,text:item.body}),signal:AbortSignal.timeout(10000)});
+  try{
+   let body=item.body;
+   if(item.invoice_id){
+    const {data:invoice,error:invoiceError}=await client.from('business_documents').select('status,total_cents,paid_cents').eq('workspace_id',item.workspace_id).eq('id',item.invoice_id).eq('kind','Invoice').maybeSingle();
+    if(invoiceError)throw Error('Invoice status unavailable');
+    if(!invoice||!['Issued','Partial'].includes(invoice.status)||invoice.paid_cents>=invoice.total_cents){await client.from('email_followups').update({status:'Cancelled'}).eq('id',item.id).eq('status','Processing');continue;}
+    body=body.replaceAll('{{balance}}',new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format((invoice.total_cents-invoice.paid_cents)/100));
+   }
+   const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${apiKey}`,'Content-Type':'application/json','Idempotency-Key':`mako-followup-${item.id}`},body:JSON.stringify({from,to:[item.recipient],subject:item.subject,text:body}),signal:AbortSignal.timeout(10000)});
    if(response.ok){const result=await response.json();const {error:saveError}=await client.from('email_followups').update({status:'Sent',provider_id:result.id}).eq('id',item.id).eq('status','Processing');if(saveError)failed++;else sent++;}
    else{await client.from('email_followups').update({status:'Failed',error:'Email provider rejected the request. Contact Mako.'}).eq('id',item.id);failed++;}
   }catch{await client.from('email_followups').update({status:'Failed',error:'Delivery outcome is uncertain. Ask Mako to check provider logs before resending.'}).eq('id',item.id);failed++;}
