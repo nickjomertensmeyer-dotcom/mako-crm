@@ -32,3 +32,9 @@
 .mako-home .marketing-header nav a:not(.primary)::after{inset:auto 12px 5px;height:2px;border-radius:2px;background:var(--nav-accent);opacity:1;transform:scaleX(0);transform-origin:left;transition:transform .2s ease}
 .mako-home .marketing-header nav a:not(.primary):is(:hover,:focus-visible)::after{animation:none;transform:scaleX(1)}
 @media(prefers-reduced-motion:reduce){.mako-home .marketing-header nav a:not(.primary),.mako-home .marketing-header nav a:not(.primary)::after{transition:none}}
+/* Keep the sign-in action distinct from the text navigation. */
+.mako-home .marketing-header nav a[href='/login']:not(.primary){background:#793ce6;color:#fff;border:1px solid #793ce6;border-radius:10px;padding:0 20px;min-height:44px;box-shadow:0 3px 10px #793ce61f;transition:background .18s ease,box-shadow .18s ease}
+.mako-home .marketing-header nav a[href='/login']:not(.primary):hover{background:#6730ca;color:#fff;box-shadow:0 4px 16px #793ce638}
+.mako-home .marketing-header nav a[href='/login']:not(.primary)::after{display:none}
+.mako-home .marketing-header nav a[href='/login']:focus-visible{outline:3px solid #00a9c5;outline-offset:4px}
+@media(prefers-reduced-motion:reduce){.mako-home .marketing-header nav a[href='/login']:not(.primary){transition:none}}
