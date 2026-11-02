@@ -1,0 +1,21 @@
+MAKO: THREE BUSINESS OWNER USABILITY SESSIONS
+
+Invite three owners individually for a 20-minute session. Use fictional data and ask before recording. Do not collect passwords or payment information.
+
+Start: "Please think aloud. We are testing Mako, not you. I will let you try before helping."
+
+Without coaching, ask each owner to:
+1. Add a fictional customer.
+2. Create a task for that customer and set a due date.
+3. Create a draft invoice. Do not send it or make a payment.
+4. Find today's work on the overview.
+5. Find Connections and explain which apps are connected.
+6. Find Send feedback and describe one confusing moment.
+
+Record per task: completed unaided / completed with help / not completed; time; where they hesitated; their exact words. Stop a task after three minutes and offer help.
+
+Ask: What would you use tomorrow? What felt unnecessary? What would stop you using this for real work?
+
+Success target: all three can add a customer and task without help; at least two can draft an invoice without help. Prioritize repeated blockers before adding features.
+
+Results are pending: no participant sessions have been conducted by this implementation.

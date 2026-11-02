@@ -1,17 +1,17 @@
 import {connectReady,merchantStatus} from '@/lib/stripe-connect';
 import {connectionContext,startGoogleConnection} from '@/lib/connections';
 import {boundedBody} from '@/lib/request-body';
-import {qbReady,startQuickBooks} from '@/lib/quickbooks';
+import {qbReady,qbSavedConnectionMatches,startQuickBooks} from '@/lib/quickbooks';
 import {calendarConfig,calendarDatabase} from '@/lib/google-calendar';
 import {connectionApps,appDefinition,connectionComingSoon} from '@/lib/connections-model';
 export const runtime='nodejs';
 const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store'}});
 export async function GET(){
  const ctx=await connectionContext(false);const db=calendarDatabase();
- const [apps,calendar]=await Promise.all([db.from('app_connections').select('provider,account_label,created_at,updated_at').eq('workspace_id',ctx.business.id).eq('user_id',ctx.user.id),db.from('google_calendar_connections').select('scopes,created_at').eq('workspace_id',ctx.business.id).eq('user_id',ctx.user.id).maybeSingle()]);
+ const [apps,calendar]=await Promise.all([db.from('app_connections').select('provider,account_label,created_at,updated_at,credential').eq('workspace_id',ctx.business.id).eq('user_id',ctx.user.id),db.from('google_calendar_connections').select('scopes,created_at').eq('workspace_id',ctx.business.id).eq('user_id',ctx.user.id).maybeSingle()]);
  let merchant={connected:false,ready:false,label:'Stripe invoice payments are not configured.'};if(connectReady()){try{merchant=await merchantStatus(ctx.business.id);}catch{merchant.label='Stripe setup needs attention.';}}
  let googleReady=false;try{calendarConfig();googleReady=true;}catch{/* Report setup needed without exposing configuration. */}
- return json({databaseReady:!apps.error,apps:connectionApps.map(app=>{const saved=apps.data?.find(c=>c.provider===app.id);return {...app,scope:undefined,connected:app.id==='stripe'?merchant.connected:app.id==='google-calendar'?Boolean(calendar.data):Boolean(saved),configured:app.id==='stripe'?connectReady():app.id==='quickbooks'?qbReady():app.id.startsWith('google')||app.id==='gmail'?googleReady:false,label:app.id==='stripe'?merchant.label:saved?.account_label||'',connectedAt:saved?.created_at||(app.id==='google-calendar'?calendar.data?.created_at:null)};})});
+ return json({databaseReady:!apps.error,apps:connectionApps.map(app=>{const saved=apps.data?.find(c=>c.provider===app.id);const reconnect=app.id==='quickbooks'&&Boolean(saved)&&!qbSavedConnectionMatches(saved!.credential,ctx.business.id,ctx.user.id);return {...app,scope:undefined,reconnect,connected:app.id==='stripe'?merchant.connected:app.id==='google-calendar'?Boolean(calendar.data):Boolean(saved)&&!reconnect,configured:app.id==='stripe'?connectReady():app.id==='quickbooks'?qbReady():app.id.startsWith('google')||app.id==='gmail'?googleReady:false,label:reconnect?'Reconnect QuickBooks to use your company in this environment.':app.id==='stripe'?merchant.label:saved?.account_label||'',connectedAt:reconnect?null:saved?.created_at||(app.id==='google-calendar'?calendar.data?.created_at:null)};})});
 }
 export async function POST(request:Request){
  const ctx=await connectionContext(false);let config;try{config=calendarConfig();}catch{return json({error:'Mako needs to finish Google application setup.'},503);}

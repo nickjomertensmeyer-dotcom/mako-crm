@@ -12,6 +12,9 @@ import {quickBooksEnvironment,quickBooksCallback,quickBooksScope,quickBooksRealm
 type QbCredential={workspaceId?:string;userId?:string;refreshToken:string;accessToken:string;expiresAt:number;realmId:string;environment:'sandbox'|'production'};
 type QbToken={access_token:string;refresh_token:string;expires_in:number};
 export function qbConfig(){const id=process.env.QUICKBOOKS_CLIENT_ID,secret=process.env.QUICKBOOKS_CLIENT_SECRET,environment=quickBooksEnvironment(process.env.QUICKBOOKS_ENVIRONMENT);if(!id||!secret)throw new Error('QuickBooks application setup is not finished.');const shared=calendarConfig();return {...shared,qbId:id,qbSecret:secret,environment,callback:quickBooksCallback(shared.origin)};}
+export function qbSavedConnectionMatches(encrypted:string,wid:string,uid:string){
+ try{const config=qbConfig();const saved=JSON.parse(openCalendar(encrypted,config.key,connectionAAD(wid,uid,'quickbooks'))) as QbCredential;return saved.environment===config.environment&&quickBooksRealm(saved.realmId)&&Boolean(saved.refreshToken);}catch{return false;}
+}
 export function qbReady(){return Boolean(process.env.QUICKBOOKS_CLIENT_ID&&process.env.QUICKBOOKS_CLIENT_SECRET&&['sandbox','production'].includes(process.env.QUICKBOOKS_ENVIRONMENT||''));}
 const discoveryCache=new Map<string,{expires:number;value:Promise<ReturnType<typeof validateQbDiscovery>>}>();
 export async function qbDiscovery(environment:'sandbox'|'production',scope:Pick<QbRequestContext,'workspaceId'|'userId'>={}){
