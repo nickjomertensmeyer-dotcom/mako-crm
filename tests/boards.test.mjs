@@ -100,5 +100,18 @@ test('boards: edits, isolation, personal views, relationships, comments, convers
  assert.equal((await query('select * from workspace_notifications')).length,0);
  await assert.rejects(save('tasks',task.id,task.version,{title:'Suspended edit'}),/Active Pro/);
  await db.exec('reset role;set role anon');await assert.rejects(query('select * from board_views'),/permission denied/);
- }finally{await db.close();}
+ await as(A);
+ await db.exec("reset role;update public.workspaces set status='active'");await as(A);
+ let person=await save('customers',null,null,{first_name:'Mary Jane',last_name:'Van Buren',birthday:'1990-05-12'});
+ assert.equal(person.name,'Mary Jane Van Buren');assert.equal(person.birthday,'1990-05-12');
+ person=await save('customers',person.id,person.version,{last_name:'Smith'});
+ assert.equal(person.name,'Mary Jane Smith');assert.equal(person.birthday,'1990-05-12');
+ person=await save('customers',person.id,person.version,{birthday:null});assert.equal(person.birthday,null);
+ await assert.rejects(save('customers',person.id,person.version,{birthday:'2999-01-01'}),/birthday/);
+ await assert.rejects(save('customers',person.id,person.version,{birthday:'1990-02-30'}));
+ await assert.rejects(save('customers',null,null,{first_name:'',last_name:'Smith'}),/first name/);
+ let legacy=await save('customers',null,null,{name:'Existing Business Name'});
+ legacy=await save('customers',legacy.id,legacy.version,{birthday:'1980-01-01'});assert.equal(legacy.name,'Existing Business Name');
+ await as(B);await assert.rejects(save('customers',person.id,person.version,{first_name:'Other workspace'}));await as(A);
+}finally{await db.close();}
 });
