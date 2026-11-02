@@ -38,6 +38,16 @@ test('customer growth tools enforce isolation, recurrence, portals, deposits and
  await q("select save_job_check($1,$2,null,'Take before photo',false,false)",[wa,job]);assert.equal((await q('select * from job_checklist')).length,1);
  assert.equal((await q("select job_photo_access($1) ok",[wa+'/'+job+'/before-test.png']))[0].ok,true);
  await as(b);assert.equal((await q('select * from job_checklist')).length,0);assert.equal((await q("select job_photo_access($1) ok",[wa+'/'+job+'/before-test.png']))[0].ok,false);await as(a);
+
+ const check=(await q('select id from job_checklist'))[0].id;
+ await q("select save_job_check($1,$2,$3,'Take before photo',true,true)",[wa,job,check]);assert.ok((await q('select removed_at from job_checklist where id=$1',[check]))[0].removed_at);
+ await q("select save_job_check($1,$2,$3,'Take before photo',true,false)",[wa,job,check]);assert.equal((await q('select removed_at from job_checklist where id=$1',[check]))[0].removed_at,null);
+ await q("select save_message_template($1,$2,'Review','Your review','Please leave honest feedback.',true)",[wa,template]);assert.ok((await q('select removed_at from message_templates where id=$1',[template]))[0].removed_at);
+ await q("select save_message_template($1,$2,'Review','Your review','Please leave honest feedback.',false)",[wa,template]);assert.equal((await q('select removed_at from message_templates where id=$1',[template]))[0].removed_at,null);
+ const photo='before-10000000-0000-4000-8000-000000000001.png';await q("insert into storage.objects(bucket_id,name) values('job-photos',$1)",[wa+'/'+job+'/'+photo]);
+ await q('select set_job_photo_removed($1,$2,$3,true)',[wa,job,photo]);assert.equal((await q('select * from job_photo_trash')).length,1);
+ await as(b);await assert.rejects(q('select set_job_photo_removed($1,$2,$3,false)',[wa,job,photo]),/Active Pro/);assert.equal((await q('select * from job_photo_trash')).length,0);await as(a);
+ await q('select set_job_photo_removed($1,$2,$3,false)',[wa,job,photo]);assert.equal((await q('select * from job_photo_trash')).length,0);await assert.rejects(q('select set_job_photo_removed($1,$2,$3,true)',[wa,job,'../other.png']),/unavailable/);
  await q('select share_customer_portal($1,$2,$3,false)',[wa,cid,'b'.repeat(64)]);
  const q2=(await q("select save_business_document($1,null,'Quote',$2,current_date,current_date+10,$3,0,'') id",[wa,cid,JSON.stringify([{description:'Work',quantity:'1',unit_cents:4000}])]))[0].id;
  await q("select change_document_status($1,$2,'Issued')",[wa,q2]);
