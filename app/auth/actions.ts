@@ -1,5 +1,6 @@
 'use server';
 import {cookies} from 'next/headers';
+import {googleAuthCallback,GOOGLE_AUTH_COOKIE} from '@/lib/google-auth';
 import {PILOT_COOKIE} from '@/lib/pilot';
 import { redirect } from 'next/navigation';
 import { supabase } from '@/lib/supabase/server';
@@ -46,4 +47,20 @@ export async function resetPassword(form: FormData) {
   if (error) message('/reset-password', 'Unable to update your password. Request a fresh reset link.');
   await client.auth.signOut();
   message('/login', 'Password updated. Sign in with your new password.');
+}
+
+export async function googleAuth(form:FormData){
+ const intent=form.get('intent')==='signup'?'signup':'login';
+ const path=intent==='signup'?'/signup':'/login';
+ let url:string|undefined;
+ try{
+  const callback=googleAuthCallback(process.env.NEXT_PUBLIC_SITE_URL);
+  const store=await cookies();
+  store.set(GOOGLE_AUTH_COOKIE,intent,{httpOnly:true,secure:new URL(callback).protocol==='https:',sameSite:'lax',path:'/auth/callback',maxAge:600});
+  const client=await supabase();
+  const {data,error}=await client.auth.signInWithOAuth({provider:'google',options:{redirectTo:callback,queryParams:{prompt:'select_account'}}});
+  if(!error)url=data.url;
+ }catch{/* Return a safe, actionable message without exposing OAuth configuration. */}
+ if(!url){(await cookies()).delete({name:GOOGLE_AUTH_COOKIE,path:'/auth/callback'});return message(path,'Google sign-in is temporarily unavailable. Please continue with email or try again shortly.');}
+ redirect(url);
 }
