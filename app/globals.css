@@ -78,3 +78,5 @@
 
 .auth-form .google-auth-form{margin:24px 0 0}
 .google-auth-button{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:48px;padding:12px 20px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:#172033;font-size:14px;font-weight:600}.google-auth-button:hover{background:#f5f7fb;border-color:#8c9bb3}.google-auth-button svg{flex-shrink:0}.auth-method-divider{display:flex;align-items:center;gap:12px;color:#64748b;font-size:12px;margin:20px 0}.auth-method-divider::before,.auth-method-divider::after{content:"";flex:1;border-top:1px solid #e2e8f0}
+
+.auth{grid-template-columns:minmax(0,1.08fr) minmax(0,1fr)}.auth-intro,.auth-panel,.intro-copy,.illustration{min-width:0}.intro-chips{flex-wrap:wrap}
