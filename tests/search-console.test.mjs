@@ -84,3 +84,32 @@ test('owner API rejects visitors and cross-origin mutations before touching cred
  assert.equal(ownerCalls,before);assert.equal(dbCalls,0);
  assert.equal((await api.POST(new Request('https://usemakocrm.com/api/owner/search-console',{method:'POST',headers:{Origin:'https://usemakocrm.com'},body:'{"action":"connect"}'}))).status,403);
 });
+
+test('platform admin checks fail closed for ordinary accounts and RPC errors',async()=>{
+ let user={id:'ordinary'},admin={data:false,error:null};
+ const api=await loadModule('../lib/owner-search-console.ts',{
+  'server-only':{},'./supabase/server':{supabase:async()=>({auth:{getUser:async()=>({data:{user},error:null})},rpc:async()=>admin})},
+  './google-calendar':{},'./google-calendar-security':{},'./search-console-model':model,
+ });
+ assert.equal(await api.searchOwner(),null);
+ admin={data:true,error:new Error('failed')};assert.equal(await api.searchOwner(),null);
+ admin={data:true,error:null};assert.equal((await api.searchOwner()).id,'ordinary');
+ user=null;assert.equal(await api.searchOwner(),null);
+});
+
+test('OAuth callback rejects changed identity and expired state before exchanging a code',async()=>{
+ let exchanges=0,state={uid:'original-owner',state:'nonce',verifier:'pkce',expires:Date.now()+60000};
+ const api=await loadModule('../app/api/owner/search-console/callback/route.ts',{
+  'next/headers':{cookies:async()=>({get:()=>({value:'ciphertext'}),delete:()=>{}})},
+  'next/server':{NextResponse:{redirect:url=>new Response(null,{status:307,headers:{location:String(url)}})}},
+  '@/lib/owner-search-console':{searchConfig:()=>({key:'key'}),searchOwner:async()=>({id:'different-owner'})},
+  '@/lib/google-calendar':{googleToken:async()=>{exchanges++;throw new Error('Should not exchange');}},
+  '@/lib/google-calendar-security':{openCalendar:()=>JSON.stringify(state),matchesState:(a,b)=>a===b},
+  '@/lib/search-console-model':model,
+ });
+ const request=new Request('https://usemakocrm.com/api/owner/search-console/callback?state=nonce&code=test');
+ assert.match((await api.GET(request)).headers.get('location'),/Sign\+in\+to\+the\+owner/);
+ state={...state,expires:Date.now()-1};
+ assert.match((await api.GET(request)).headers.get('location'),/expired/);
+ assert.equal(exchanges,0);
+});
