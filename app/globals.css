@@ -106,3 +106,5 @@
 .line-item>label input,.line-item>.icon-button{box-sizing:border-box;height:48px;min-height:48px}
 .line-item>.icon-button{align-self:end;margin:0;width:100%}
 .record-board th.row-actions-heading,.record-board th.linked-work-heading{text-align:center}
+
+.demo-pro-features{margin-top:24px}.demo-pro-features>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;font-weight:650}.demo-pro-features>summary .badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;white-space:nowrap}.demo-pro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px;margin:18px 0}.demo-pro-grid article{display:flex;flex-direction:column;border:1px solid var(--line,#dbe4f1);border-radius:10px;padding:18px}.demo-pro-grid h3{font-size:16px;margin:0 0 8px}.demo-pro-grid p{font-size:13px;line-height:1.6}.demo-pro-grid .demo-pro-example{padding:10px;border-radius:8px;background:#2454ef0a;font-size:12px}.demo-pro-grid button{margin-top:auto;align-self:flex-start;gap:6px}.preview-banner a{color:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px}
