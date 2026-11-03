@@ -83,3 +83,10 @@
 
 /* Quiet until actionable work exists; visible in both light and dark navigation. */
 .sidebar nav .attention-nav-dot{display:inline-block;width:7px;height:7px;min-width:7px;flex:0 0 7px;margin-left:auto;border-radius:50%;background:#f04452;box-shadow:0 0 0 2px #f044521f}
+
+/* Keep undo actions aligned independently of form and icon-button spacing. */
+.undo-notice{font-size:13px;line-height:1.5;gap:12px}
+.undo-notice>span{flex:1;min-width:0}
+.undo-notice>button{display:inline-flex;align-items:center;justify-content:center;align-self:center;flex-shrink:0;min-height:40px;height:40px;margin:0;line-height:1;padding:0 14px}
+.undo-notice>button.icon-button{width:36px;min-width:36px;padding:0}
+.undo-notice>button.secondary,.undo-notice>button.icon-button{background:#263b5d;color:#e2edff;border:1px solid #405370}.undo-notice>button:hover{background:#345076}
