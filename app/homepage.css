@@ -45,8 +45,9 @@
 /* A wider hover target lets the thin waterline react without adding a button. */
 @media(hover:hover){
   .home-hero h1 .hero-shark-accent{pointer-events:auto}
-  .hero-shark-accent::after{content:"";position:absolute;left:4%;right:4%;bottom:0;height:18px;opacity:0;pointer-events:none;background:url('/hero-water-wave.svg') repeat-x left center;background-size:240px 18px;filter:drop-shadow(0 0 3px #00cbe85c)}
-  .hero-shark-accent:hover::after{animation:shark-water-ripple 1.2s ease-in-out both}
+  .hero-shark-accent::after{content:"";position:absolute;left:4%;right:4%;bottom:0;height:18px;opacity:0;pointer-events:none;background:url('/hero-water-wave.svg') no-repeat center;background-size:100% 100%;filter:drop-shadow(0 0 3px #00cbe840)}
+  .hero-shark-accent:hover .hero-shark-water{visibility:hidden}
+  .hero-shark-accent:hover::after{opacity:1;animation:shark-water-ripple 2.4s ease-in-out infinite}
 }
-@keyframes shark-water-ripple{0%{opacity:0;transform:scaleY(.1);background-position:0 center}25%{opacity:.85;transform:scaleY(.65)}60%{opacity:.65;transform:scaleY(.9)}100%{opacity:0;transform:scaleY(.15);background-position:240px center}}
-@media(prefers-reduced-motion:reduce){.hero-shark-accent::after,.hero-shark-accent:hover::after{display:none;animation:none}}
+@keyframes shark-water-ripple{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
+@media(prefers-reduced-motion:reduce){.hero-shark-accent::after,.hero-shark-accent:hover::after{display:none;animation:none}.hero-shark-accent:hover .hero-shark-water{visibility:visible}}
