@@ -1,4 +1,6 @@
 import {Brand} from '@/components/brand';
+import {publicMetadata} from '@/lib/public-metadata';
+export const metadata=publicMetadata('Terms of Service | Mako CRM','Review Mako CRM subscription pricing, cancellation, refunds, account access, and service terms for U.S. businesses.','/terms');
 export default function Terms(){return <main id="main" className="legal-page"><Brand/><h1>Terms of service</h1><p className="muted">Last updated October 30, 2026</p>
 <section><h2>Who provides Mako</h2><p>Mako CRM is operated by Nicholas Mertensmeyer in Missouri, United States. Contact <a href="mailto:makocrm@gmail.com">makocrm@gmail.com</a> for billing, service, or legal questions. Mako is currently offered to businesses located in the United States. The person creating or managing a business workspace must be authorized to act for that business.</p></section>
 <section><h2>Accounts and access</h2><p>Creating an account does not charge you, start a free trial, or activate a subscription. Verify your email and configure your workspace. Pro activates when Stripe confirms payment. Keep login credentials secure and grant workspace access only to authorized people. Contact Mako promptly if you suspect unauthorized access.</p></section>

@@ -5,7 +5,8 @@ import {supabase} from '@/lib/supabase/server';
 import {changeReviewStatus} from './actions';
 import '../homepage.css';
 import './reviews.css';
-export const metadata={title:'Customer reviews'};
+import {publicMetadata} from '@/lib/public-metadata';
+export const metadata=publicMetadata('Customer Reviews | Mako CRM','Read feedback from people using Mako CRM and share your experience with our customer, lead, and task management tools.','/reviews');
 export default async function Reviews({searchParams}:{searchParams:Promise<{message?:string}>}){
  let reviews:{id:string;display_name:string;business_name:string;rating:number;body:string}[]=[];let signedIn=false;let unavailable:boolean;let own:{id:string;status:string}|null=null;
  try{const client=await supabase();const {data:user}=await client.auth.getUser();signedIn=Boolean(user.user);const result=await client.rpc('public_reviews');unavailable=Boolean(result.error);reviews=result.data||[];if(user.user){const result=await client.from('customer_reviews').select('id,status').eq('author_id',user.user.id).maybeSingle();own=result.data;}}catch{unavailable=true;}

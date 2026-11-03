@@ -6,6 +6,15 @@ import {Brand} from '@/components/brand';
 import {businessInfo} from '@/lib/business-info';
 import {ArrowUpRight,Check,Users,Target,ListTodo} from 'lucide-react';
 import './homepage.css';
+import {publicMetadata,publicSiteUrl} from '@/lib/public-metadata';
+export const metadata=publicMetadata('Mako CRM | CRM for Small Service Businesses','Manage customers, leads, tasks, scheduling, quotes, and invoices in one workspace. Explore the free demo. Mako Pro is $100/month with no onboarding fee.','/');
+const searchIdentity={
+ '@context':'https://schema.org',
+ '@graph':[
+  {'@type':'Organization','@id':`${publicSiteUrl}/#organization`,name:'Mako CRM',url:publicSiteUrl,logo:`${publicSiteUrl}/mako-email-logo.png`,email:'makocrm@gmail.com',slogan:'Stay sharp. Move faster.'},
+  {'@type':'WebSite','@id':`${publicSiteUrl}/#website`,name:'Mako CRM',alternateName:'Mako',url:publicSiteUrl,publisher:{'@id':`${publicSiteUrl}/#organization`}},
+ ],
+};
 const templates='https://makocrm.myshopify.com/collections/all';
 const steps=[
  {number:'01',title:'Capture the next opportunity.',text:'Keep new inquiries, deal stages, and next follow-ups in one lead board. Know who needs a reply before the opportunity slips away.',image:'leads',link:'leads',alt:'Mako lead board with fictional customer names, pipeline stages, and deal values'},
@@ -13,6 +22,7 @@ const steps=[
  {number:'03',title:'Keep the whole relationship together.',text:'Find customer details, notes, and related work without digging through scattered messages. Pick up the conversation where you left off.',image:'customers',link:'customers',alt:'Mako customer board with fictional customer contact information and relationship details'},
 ];
 export default function Home(){return <main id="main" className="marketing mako-home">
+ <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(searchIdentity).replace(/</g,'\\u003c')}}/>
  <header className="marketing-header"><Brand/><HomeNavigation/></header>
  <section className="home-hero"><p className="eyebrow">THE CRM FOR SERVICE BUSINESSES</p><h1>Your customers, leads, and tasks.<br/><span>One organized workspace.</span></h1><p className="hero-description">From the first inquiry to the final invoice, keep your customers, follow-ups, and daily work in one place.</p><div className="home-actions"><a className="primary" href="/preview">Try the demo <ArrowUpRight size={18}/></a><a className="secondary" href="#pricing">View pricing</a></div><p className="hero-reassurance"><Check size={15}/> Interactive demo · No signup or payment details needed</p><div className="home-hero-facts"><span>Pro: $100 USD / month</span><span>No onboarding fee</span><a href={businessInfo.contact}>Questions? Talk to Mako ↗</a></div><HomeProductPreview/></section>
  <section className="home-benefits" aria-label="What Mako helps you do">{[{Icon:Target,title:'Follow up with confidence',text:'Keep leads and their next steps in view.'},{Icon:Users,title:'Know your customers',text:'Bring contact details and related work together.'},{Icon:ListTodo,title:'See what needs attention',text:'Focus on open tasks, upcoming work, and unpaid invoices.'}].map(({Icon,title,text})=><article key={title}><Icon size={24}/><h2>{title}</h2><p>{text}</p></article>)}</section>
