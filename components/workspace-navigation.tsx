@@ -1,6 +1,7 @@
 'use client';
 import {WorkspaceLink as Link} from './workspace-link';
-import {LayoutDashboard,Users,Target,FileText,CalendarDays,BriefcaseBusiness,ListChecks,Mail,AlertCircle} from 'lucide-react';
+import {LayoutDashboard,Users,Target,FileText,CalendarDays,BriefcaseBusiness,ListChecks,Mail} from 'lucide-react';
+import {AttentionNavLink} from './attention-nav-link';
 import {AssetIcon,RecurringIcon,BookingIcon,ProjectIcon,InventoryIcon} from './tool-icons';
 import {useBusinessIdentity} from './business-identity';
 import {SharkyLaunchButton} from './sharky-assistant';
@@ -9,7 +10,7 @@ const links=[['customers','Customers',Users],['leads','Leads',Target],['quotes',
 const groups=[['Sales',['customers','leads','quotes']],['Work',['tasks','jobs','schedule','assets','recurring','booking','projects','inventory','team']],['Billing',['invoices']]] as const;
 export function WorkspaceNavigation({business,demo=false,current}:{business:Business;demo?:boolean;current:string}){
   const configured=useBusinessIdentity(business,demo),base=demo?'/preview':'/workspace';
-  return <nav aria-label="Workspace navigation"><Link className={current==='overview'?'active':''} aria-current={current==='overview'?'page':undefined} href={base}><LayoutDashboard size={19}/>Overview</Link><Link className={current==='attention'?'active':''} href={`${base}?view=attention`}><AlertCircle size={19}/>Needs attention</Link>{groups.map(([section,keys])=>{
+  return <nav aria-label="Workspace navigation"><Link className={current==='overview'?'active':''} aria-current={current==='overview'?'page':undefined} href={base}><LayoutDashboard size={19}/>Overview</Link><AttentionNavLink demo={demo} current={current} modules={configured.modules} workspaceId={business.id}/>{groups.map(([section,keys])=>{
     const visible=links.filter(([key])=>(keys as readonly string[]).includes(key)&&configured.modules.includes(key));
     return visible.length?<div className="nav-group" key={section}><p className="nav-section">{section}</p>{visible.map(([key,label,Icon])=><Link key={key} className={current===key?'active':''} aria-current={current===key?'page':undefined} href={`${base}?view=${key}`}><Icon size={19}/>{label}{key==='team'&&<small className="soon">Soon</small>}</Link>)}</div>:null;
   })}{configured.modules.some(key=>key==='customers'||key==='leads')&&<Link className={current==='followups'?'active':''} href={`${base}?view=followups`}><Mail size={19}/>Follow-ups</Link>}<SharkyLaunchButton/></nav>;
