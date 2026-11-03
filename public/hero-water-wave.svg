@@ -1,4 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="720" height="24" viewBox="0 0 720 24" fill="none" preserveAspectRatio="none">
-  <defs><linearGradient id="water" x1="0" y1="12" x2="720" y2="12" gradientUnits="userSpaceOnUse"><stop stop-color="#2454ef" stop-opacity="0"/><stop offset=".15" stop-color="#2454ef"/><stop offset=".5" stop-color="#793ce6"/><stop offset=".85" stop-color="#00cbe8"/><stop offset="1" stop-color="#00cbe8" stop-opacity="0"/></linearGradient></defs>
-  <path d="M0 12C90 12 90 5 180 5S270 19 360 19 450 5 540 5 630 12 720 12" stroke="url(#water)" stroke-width="2" stroke-linecap="round"/>
-</svg>

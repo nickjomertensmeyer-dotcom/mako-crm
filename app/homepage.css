@@ -42,12 +42,10 @@
 /* Sharks introduce the headline; the water keeps a quiet brand-colored glow. */
 .home-hero h1 .hero-final-line{position:relative;display:inline-block;padding-bottom:22px;animation:shark-headline-arrive .7s cubic-bezier(.2,.7,.2,1) both}.home-hero h1 .hero-shark-accent{position:absolute;display:block;left:0;right:0;bottom:0;height:27px;overflow:hidden;pointer-events:none;isolation:isolate}.hero-shark-water{position:absolute;display:block;left:4%;right:4%;bottom:6px;height:3px;border-radius:50%;background:linear-gradient(90deg,transparent 0%,#2454ef9c 18%,#793ce6bd 35%,#00cbe8d6 50%,#793ce6bd 65%,#2454ef9c 82%,transparent 100%);background-size:200% 100%;background-position:0% 50%;box-shadow:0 0 8px #2454ef24;transform-origin:center;animation:shark-water-arrive 1.2s .25s both,shark-water-flow 6s 2.5s ease-in-out infinite}.hero-shark{position:absolute;left:-55px;top:0;width:46px;height:28px;opacity:0;filter:drop-shadow(0 2px 4px #2454ef25);animation:shark-headline-swim 1.7s cubic-bezier(.25,.1,.3,1) both}.hero-shark-blue{color:#2454ef;animation-delay:.15s}.hero-shark-purple{color:#793ce6;width:37px;height:24px;top:3px;animation-delay:.4s}.hero-shark-cyan{color:#008ea8;width:29px;height:21px;top:6px;animation-delay:.62s}@keyframes shark-headline-swim{0%{left:-55px;transform:translateY(3px) rotate(-4deg);opacity:0}8%{opacity:.9}50%{transform:translateY(-1px) rotate(1deg);opacity:.9}88%{opacity:.8}100%{left:calc(100% + 10px);transform:translateY(3px) rotate(-2deg);opacity:0}}@keyframes shark-water-arrive{from{transform:scaleX(.15);opacity:0}to{transform:scaleX(1);opacity:1}}@keyframes shark-water-flow{0%,100%{background-position:0% 50%;box-shadow:0 0 8px #2454ef30,0 0 15px #793ce61a;transform:translateY(0) scaleX(1)}50%{background-position:100% 50%;box-shadow:0 0 12px #00cbe861,0 0 22px #793ce638;transform:translateY(-1px) scaleX(.97)}}@keyframes shark-headline-arrive{from{opacity:.25;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}@media(prefers-reduced-motion:reduce){.home-hero h1 .hero-final-line,.hero-shark,.hero-shark-water{animation:none}.hero-shark{display:none}.hero-shark-water{transform:none;opacity:1}}
 
-/* A wider hover target lets the thin waterline react without adding a button. */
-@media(hover:hover){
-  .home-hero h1 .hero-shark-accent{pointer-events:auto}
-  .hero-shark-accent::after{content:"";position:absolute;left:4%;right:4%;bottom:0;height:18px;opacity:0;pointer-events:none;background:url('/hero-water-wave.svg') no-repeat center;background-size:100% 100%;filter:drop-shadow(0 0 3px #00cbe840)}
-  .hero-shark-accent:hover .hero-shark-water{visibility:hidden}
-  .hero-shark-accent:hover::after{opacity:1;animation:shark-water-ripple 2.4s ease-in-out infinite}
-}
-@keyframes shark-water-ripple{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
-@media(prefers-reduced-motion:reduce){.hero-shark-accent::after,.hero-shark-accent:hover::after{display:none;animation:none}.hero-shark-accent:hover .hero-shark-water{visibility:visible}}
+/* One crest follows the pointer; it replaces the ambient straight waterline. */
+.home-hero h1 .hero-shark-accent{pointer-events:auto}
+.hero-water-cursor{position:absolute;left:4%;bottom:0;width:92%;height:27px;opacity:0;pointer-events:none;filter:drop-shadow(0 0 3px #00cbe840)}
+.hero-water-cursor path{transition:d .1s ease-out}
+.hero-shark-accent[data-cursor-active="true"] .hero-shark-water{visibility:hidden}
+.hero-shark-accent[data-cursor-active="true"] .hero-water-cursor{opacity:1}
+@media(prefers-reduced-motion:reduce){.hero-water-cursor{display:none}.hero-shark-accent[data-cursor-active="true"] .hero-shark-water{visibility:visible}}
