@@ -1,0 +1,3 @@
+// Decorative vectors stay behind the public homepage headline, outside the CRM.
+const shark='M2 8 11 13C17 9 23 8 28 10L26 2 36 11C42 12 46 14 48 16C43 20 35 21 29 19L25 27 22 19C17 20 13 18 10 17L2 24 5 16Z';
+export function HeroSharkAccent(){return <span className="hero-shark-accent" aria-hidden="true"><span className="hero-shark-water"/>{['blue','purple','cyan'].map(color=><svg key={color} className={`hero-shark hero-shark-${color}`} viewBox="0 0 48 30" fill="none"><path d={shark} fill="currentColor"/><path d="M32 12 30 16M28 12 26 16" stroke="white" strokeWidth="1" opacity=".6"/></svg>)}</span>;}
