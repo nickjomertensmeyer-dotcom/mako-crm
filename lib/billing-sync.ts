@@ -25,9 +25,10 @@ export async function syncBilling(customer:string,eventKey:string){
  try{
   const claimed=await db.rpc(live?'claim_live_billing_sync':'claim_billing_sync',{customer,event_key:eventKey});
   if(claimed.error)throw claimed.error;token=claimed.data;if(!token)return;
-  const {access}=await billingSnapshot(customer);
+  const snapshot=await billingSnapshot(customer);const {access}=snapshot;
   const applied=await db.rpc(live?'apply_live_billing_sync':'apply_billing_sync',{customer,event_key:eventKey,token,subscription:access.subscription,new_status:access.status,entitled:access.active,cancel_end:access.cancelAtEnd});
   if(applied.error)throw applied.error;
+  return snapshot;
  }catch(error){
   if(token)await db.from(billingTable()).update({sync_token:null,sync_until:null}).eq('stripe_customer_id',customer).eq('sync_token',token);
   throw error;

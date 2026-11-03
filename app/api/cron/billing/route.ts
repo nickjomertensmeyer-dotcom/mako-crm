@@ -1,3 +1,4 @@
+import {remindProTrial} from '@/lib/trial-reminder';
 import {timingSafeEqual} from 'node:crypto';
 import {billingClient,billingTable,billingReady} from '@/lib/billing';
 import {syncBilling} from '@/lib/billing-sync';
@@ -13,7 +14,7 @@ export async function GET(request:Request){
   if(error)return Response.json({error:'Unable to load billing accounts'},{status:503});
   for(const row of data||[]){
    if(Date.now()-started>240000)return Response.json({error:'Billing reconciliation exceeded its time budget',checked,failed},{status:503});
-   try{await syncBilling(row.stripe_customer_id,`reconcile-${process.env.STRIPE_LIVE_MODE==='true'?'live':'test'}-${row.workspace_id}-${bucket}`);checked++;}catch{failed++;}
+   try{const snapshot=await syncBilling(row.stripe_customer_id,`reconcile-${process.env.STRIPE_LIVE_MODE==='true'?'live':'test'}-${row.workspace_id}-${bucket}`);if(snapshot)await remindProTrial(row.stripe_customer_id,row.workspace_id,snapshot.subscriptions);checked++;}catch{failed++;}
   }
   if(!data||data.length<50)break;offset+=50;
  }

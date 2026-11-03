@@ -12,6 +12,6 @@ export function stripeClient(){
 export async function stripeRequest<T>(path:string,params?:Record<string,string>,key?:string):Promise<T>{
  return stripeClient().rawRequest(params?'POST':'GET',`/v1/${path}`,params,{...(key?{idempotencyKey:key}:{})}) as Promise<T>;
 }
-export type StripeSubscription={id:string;status:string;cancel_at_period_end:boolean;items:{data:{price:{id:string;unit_amount:number|null;currency:string;recurring:{interval:string;interval_count:number}|null};current_period_end?:number}[]}};
-export async function subscriptions(customer:string){return stripeRequest<{data:StripeSubscription[]}>(`subscriptions?customer=${encodeURIComponent(customer)}&status=all&limit=100`);}
+export type StripeSubscription={id:string;status:string;cancel_at_period_end:boolean;trial_end?:number;items:{data:{price:{id:string;unit_amount:number|null;currency:string;recurring:{interval:string;interval_count:number}|null};current_period_end?:number}[]}};
+export async function subscriptions(customer:string){return stripeRequest<{data:StripeSubscription[];has_more?:boolean}>(`subscriptions?customer=${encodeURIComponent(customer)}&status=all&limit=100`);}
 export function billingOrigin(){const url=new URL(process.env.NEXT_PUBLIC_SITE_URL!);if(url.protocol!=='https:'&&!['localhost','127.0.0.1'].includes(url.hostname))throw new Error('Invalid billing site URL');return url.origin;}
