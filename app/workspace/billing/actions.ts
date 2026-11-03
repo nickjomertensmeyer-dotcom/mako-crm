@@ -1,4 +1,5 @@
 'use server';
+import {PRO_MONTHLY_CENTS} from '@/lib/pro-pricing';
 import {eligibleForProTrial,proCheckoutParameters} from '@/lib/pro-trial';
 import {randomUUID} from 'node:crypto';
 import {redirect} from 'next/navigation';
@@ -18,11 +19,11 @@ export async function openBilling(form:FormData){
   else{
    const existing=await subscriptions(row.stripe_customer_id);if(existing.data.some(s=>!['canceled','incomplete_expired'].includes(s.status)))throw new Error('Subscription exists');
    if(Date.now()-new Date(row.checkout_started_at).getTime()>=86400000){const next={checkout_attempt:randomUUID(),checkout_started_at:new Date().toISOString()};const refreshed=await db.from(billingTable()).update(next).eq('workspace_id',business.id).eq('checkout_attempt',row.checkout_attempt).select('*').maybeSingle();if(refreshed.error||!refreshed.data)throw new Error('Retry checkout');row=refreshed.data;}
-   const price=await stripeRequest<{active:boolean;type:string;unit_amount:number;currency:string;recurring:{interval:string;interval_count:number}}>(`prices/${encodeURIComponent(process.env.STRIPE_PRO_PRICE_ID!)}`);if(!price.active||price.type!=='recurring'||price.unit_amount!==10000||price.currency!=='usd'||price.recurring.interval!=='month'||price.recurring.interval_count!==1)throw new Error('Invalid recurring price');
+   const price=await stripeRequest<{active:boolean;type:string;unit_amount:number;currency:string;recurring:{interval:string;interval_count:number}}>(`prices/${encodeURIComponent(process.env.STRIPE_PRO_PRICE_ID!)}`);if(!price.active||price.type!=='recurring'||price.unit_amount!==PRO_MONTHLY_CENTS||price.currency!=='usd'||price.recurring.interval!=='month'||price.recurring.interval_count!==1)throw new Error('Invalid recurring price');
    const trial=eligibleForProTrial(existing.data.length,row.subscription_id,existing.has_more);
    const parameters=proCheckoutParameters(row.stripe_customer_id,business.id,process.env.STRIPE_PRO_PRICE_ID!,returnUrl,trial);
-   let session=await stripeRequest<{url:string|null;status:string}>('checkout/sessions',parameters,`mako-pro-trial-v3-${row.checkout_attempt}`);
-   if(session.status==='expired'||session.status==='complete'){const attempt=randomUUID(),started=new Date().toISOString();const updated=await db.from(billingTable()).update({checkout_attempt:attempt,checkout_started_at:started}).eq('workspace_id',business.id).eq('checkout_attempt',row.checkout_attempt).select('checkout_attempt').maybeSingle();if(updated.error||!updated.data)throw new Error('Retry checkout');session=await stripeRequest('checkout/sessions',parameters,`mako-pro-trial-v3-${attempt}`);}
+   let session=await stripeRequest<{url:string|null;status:string}>('checkout/sessions',parameters,`mako-pro-fifty-v4-${row.checkout_attempt}`);
+   if(session.status==='expired'||session.status==='complete'){const attempt=randomUUID(),started=new Date().toISOString();const updated=await db.from(billingTable()).update({checkout_attempt:attempt,checkout_started_at:started}).eq('workspace_id',business.id).eq('checkout_attempt',row.checkout_attempt).select('checkout_attempt').maybeSingle();if(updated.error||!updated.data)throw new Error('Retry checkout');session=await stripeRequest('checkout/sessions',parameters,`mako-pro-fifty-v4-${attempt}`);}
    if(!session.url||session.status!=='open')throw new Error('Refresh subscription');destination=session.url;
   }
  }catch{redirect('/workspace?view=plan&message=Billing+could+not+be+opened.+Please+contact+Mako+or+try+again.');}

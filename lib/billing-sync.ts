@@ -1,3 +1,4 @@
+import {proPriceIds} from '@/lib/pro-pricing';
 import 'server-only';
 import {billingTable,billingClient,stripeRequest} from '@/lib/billing';
 import {proEntitlement,type EntitlementSubscription} from '@/lib/billing-security';
@@ -10,14 +11,15 @@ export async function billingSnapshot(customer:string){
   all.push(...page.data);after=page.has_more?page.data.at(-1)?.id||'':'';
   if(all.length>1000)throw new Error('Too many subscriptions');
  }while(after);
- const price=process.env.STRIPE_PRO_PRICE_ID!;
+ const prices=proPriceIds();
  for(const sub of all){
-  if(sub.livemode!==(process.env.STRIPE_LIVE_MODE==='true')||!sub.items.data.some(i=>i.price.id===price)||!['past_due','unpaid','canceled'].includes(sub.status))continue;
+  if(sub.livemode!==(process.env.STRIPE_LIVE_MODE==='true')||!sub.items.data.some(i=>prices.includes(i.price.id))||!['past_due','unpaid','canceled'].includes(sub.status))continue;
   // First-class subscription filter prevents another subscription's payment granting access.
+  const price=sub.items.data.find(i=>prices.includes(i.price.id))!.price.id;
   const invoices=await stripeRequest<{data:BillingInvoice[]}>(`invoices?subscription=${encodeURIComponent(sub.id)}&status=paid&limit=100`);
   sub.previousPaidThrough=Math.max(0,...invoices.data.map(invoice=>invoicePaidThrough(invoice,price)));
  }
- return {subscriptions:all,access:proEntitlement(all,price,process.env.STRIPE_LIVE_MODE==='true',process.env.STRIPE_SETUP_PRICE_ID)};
+ return {subscriptions:all,access:proEntitlement(all,prices,process.env.STRIPE_LIVE_MODE==='true',process.env.STRIPE_SETUP_PRICE_ID)};
 }
 
 export async function syncBilling(customer:string,eventKey:string){

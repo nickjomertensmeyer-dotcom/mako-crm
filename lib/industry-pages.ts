@@ -13,7 +13,7 @@ export const industryPages:IndustryPage[]=[
  {
   slug:'detailing',name:'Auto detailing businesses',shortName:'Detailing',icon:'car',preset:'Mobile detailing',
   title:'Auto Detailing CRM for Customers, Quotes & Jobs | Mako CRM',
-  description:'Organize detailing customers, vehicle notes, service quotes, appointments, and invoices in Mako CRM. Try the free demo. Pro is $100/month with no onboarding fee.',
+  description:'Organize detailing customers, vehicle notes, service quotes, appointments, and invoices in Mako CRM. Try the free demo. Pro is $50/month with no onboarding fee.',
   headline:'Your next detail starts with the right details.',
   intro:'A CRM for mobile detailers and detailing shops that want customer requests, vehicle information, quotes, and booked work in one place.',
   example:{customer:'Jordan Ellis',work:'Interior detail · midsize SUV',status:'Ready to quote',notes:['Dog hair on rear seats','Mobile visit: customer provides parking','Confirm service scope before booking']},
@@ -33,7 +33,7 @@ export const industryPages:IndustryPage[]=[
  {
   slug:'cleaning',name:'Cleaning businesses',shortName:'Cleaning',icon:'cleaning',preset:'Cleaning',
   title:'Cleaning Business CRM for Visits, Tasks & Invoices | Mako CRM',
-  description:'Keep cleaning customers, property notes, quotes, scheduled visits, job checklists, and invoices organized in Mako CRM. Explore the demo. Pro is $100/month.',
+  description:'Keep cleaning customers, property notes, quotes, scheduled visits, job checklists, and invoices organized in Mako CRM. Explore the demo. Pro is $50/month.',
   headline:'Keep the visit organized. Keep the customer remembered.',
   intro:'A CRM for residential and small commercial cleaning businesses, with a clear place for customer preferences, visit details, tasks, and invoices.',
   example:{customer:'Taylor Morgan',work:'Move-out clean · two-bedroom home',status:'Visit planned',notes:['Include inside cabinets in the quote','Confirm access with the customer','Final walkthrough before invoicing']},
@@ -53,7 +53,7 @@ export const industryPages:IndustryPage[]=[
  {
   slug:'lawn-care',name:'Lawn care & landscaping businesses',shortName:'Lawn care',icon:'lawn',preset:'Landscaping & lawn care',
   title:'Lawn Care & Landscaping CRM for Leads, Jobs & Quotes | Mako CRM',
-  description:'Track lawn care inquiries, property notes, quotes, scheduled work, job checklists, and invoices with Mako CRM. Try the demo. Pro is $100/month.',
+  description:'Track lawn care inquiries, property notes, quotes, scheduled work, job checklists, and invoices with Mako CRM. Try the demo. Pro is $50/month.',
   headline:'From the first yard inquiry to the finished job.',
   intro:'A CRM for lawn care and landscaping businesses that need a clear path from property inquiries and estimates to scheduled work and invoices.',
   example:{customer:'Alex Rivera',work:'Seasonal cleanup · front and back yard',status:'Estimate follow-up',notes:['Confirm debris removal in the scope','Side gate access needs a check','Schedule after the customer accepts the quote']},

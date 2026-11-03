@@ -6,7 +6,7 @@ const now=1800000000;
 const trial={id:'sub_trial',status:'trialing',livemode:false,cancel_at_period_end:false,trial_start:now,trial_end:now+7*86400,default_payment_method:'pm_test',metadata:{mako_trial:PRO_TRIAL_OFFER},latest_invoice:{status:'paid',amount_paid:0},items:{data:[{price:{id:'pro'}}]}};
 test('trial checkout requires payment details and schedules exactly seven free days',()=>{
  const p=proCheckoutParameters('cus_test','workspace','pro','https://example.com/workspace?view=plan',true);
- assert.equal(p.payment_method_collection,'always');assert.equal(p['subscription_data[trial_period_days]'],'7');assert.equal(p['subscription_data[trial_settings][end_behavior][missing_payment_method]'],'cancel');assert.equal(p['subscription_data[metadata][mako_trial]'],PRO_TRIAL_OFFER);assert.match(p['custom_text[submit][message]'],/100 USD\/month/);assert.match(p['custom_text[submit][message]'],/cancel before/);
+ assert.equal(p.payment_method_collection,'always');assert.equal(p['subscription_data[trial_period_days]'],'7');assert.equal(p['subscription_data[trial_settings][end_behavior][missing_payment_method]'],'cancel');assert.equal(p['subscription_data[metadata][mako_trial]'],PRO_TRIAL_OFFER);assert.match(p['custom_text[submit][message]'],/50 USD\/month/);assert.match(p['custom_text[submit][message]'],/cancel before/);
  const returning=proCheckoutParameters('cus_test','workspace','pro','https://example.com/workspace?view=plan',false);assert.equal(returning['subscription_data[trial_period_days]'],undefined);assert.equal(returning['subscription_data[metadata][mako_trial]'],undefined);
 });
 test('prior canceled or paid subscriptions cannot restart the introductory trial',()=>{

@@ -5,10 +5,12 @@ export function verifyStripeSignature(body:string,header:string,secret:string,no
  const parts=header.split(',').map(p=>p.split('='));const time=parts.find(([k])=>k==='t')?.[1];if(!time||!/^\d+$/.test(time)||Math.abs(now-Number(time))>300)return false;
  try{Stripe.webhooks.constructEvent(body,header,secret,300,undefined,now*1000);return true;}catch{return false;}
 }
-export type EntitlementSubscription={id:string;status:string;livemode:boolean;cancel_at_period_end:boolean;pause_collection?:unknown;trial_end?:number;trial_start?:number;default_payment_method?:string|{id:string}|null;metadata?:Record<string,string>;latest_invoice:BillingInvoice|string|null;previousPaidThrough?:number;items:{data:{price:{id:string};current_period_end?:number}[]}};
-export function proEntitlement(subscriptions:EntitlementSubscription[],price:string,live:boolean,setupPrice?:string,now=Math.floor(Date.now()/1000)){
- const matching=subscriptions.filter(s=>s.livemode===live&&s.items.data.some(i=>i.price.id===price));
+export type EntitlementSubscription={id:string;status:string;livemode:boolean;cancel_at_period_end:boolean;pause_collection?:unknown;trial_end?:number;trial_start?:number;default_payment_method?:string|{id:string}|null;metadata?:Record<string,string>;latest_invoice:BillingInvoice|string|null;previousPaidThrough?:number;items:{data:{price:{id:string;unit_amount?:number|null;currency?:string};current_period_end?:number}[]}};
+export function proEntitlement(subscriptions:EntitlementSubscription[],prices:string|string[],live:boolean,setupPrice?:string,now=Math.floor(Date.now()/1000)){
+ const accepted=Array.isArray(prices)?prices:[prices];
+ const matching=subscriptions.filter(s=>s.livemode===live&&s.items.data.some(i=>accepted.includes(i.price.id)));
  const evaluated=matching.map(s=>{
+  const price=s.items.data.find(i=>accepted.includes(i.price.id))!.price.id;
   const invoice=typeof s.latest_invoice==='object'?s.latest_invoice:null;
   const paidThrough=Math.max(invoicePaidThrough(invoice,price),s.previousPaidThrough||0);
   const graceEnd=['past_due','unpaid'].includes(s.status)&&!s.pause_collection?renewalGraceEnd(invoice,s.previousPaidThrough||0,price):0;
