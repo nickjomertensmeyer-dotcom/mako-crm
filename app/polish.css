@@ -143,3 +143,62 @@ input:focus,select:focus,textarea:focus{outline:3px solid #2457e826;border-color
 @media(max-width:600px){.today-card{flex-direction:column;align-items:stretch}.today-main{flex:0 0 auto}.today-actions,.today-form{width:100%}.today-actions .compact{flex:1}}
 
 .inline-check{display:flex;align-items:center;gap:8px;font-size:13px;margin:8px 0}.inline-check input{width:auto;margin:0}
+
+/* ---------- Needs attention ---------- */
+.attention-page>h1{margin-bottom:4px}
+.attention-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px;margin-top:18px}
+.attention-card{--tone:#2457e8;--tone-bg:#eef3ff;padding:18px 18px 16px;border-top:3px solid var(--tone);display:flex;flex-direction:column;gap:10px}
+.attention-card.tone-amber{--tone:#e8a124;--tone-bg:#fff6e2}
+.attention-card.tone-red{--tone:#e2483d;--tone-bg:#ffecea}
+.attention-card.tone-blue{--tone:#2457e8;--tone-bg:#eaf0ff}
+.attention-card.tone-violet{--tone:#6d3df0;--tone-bg:#f1ebff}
+.attention-card-head{display:flex;align-items:center;gap:10px}
+.attention-card-head h2{margin:0;font-size:16px;letter-spacing:-.02em;flex:1}
+.attention-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:var(--tone-bg);color:var(--tone)}
+.attention-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.attention-row{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;transition:border-color .15s,box-shadow .15s,transform .15s var(--ease)}
+.attention-row:hover{border-color:var(--tone);box-shadow:var(--shadow-sm);transform:translateY(-1px)}
+.attention-row-text{display:grid;gap:2px;min-width:0;flex:1}
+.attention-row-text a{font-weight:700;overflow-wrap:anywhere}
+.attention-row-text small{color:var(--muted);font-size:12px}
+.attention-x{flex:0 0 auto;display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;border-radius:9px;background:transparent;color:#8493ad;cursor:pointer;transition:background .15s,color .15s}
+.attention-x:hover{background:#ffe3e0;color:#c2352b}
+.attention-empty{display:flex;align-items:flex-start;gap:8px;margin:0;padding:12px;border-radius:12px;background:var(--surface);color:var(--muted);font-size:13.5px;line-height:1.5}
+.attention-empty svg{flex:0 0 auto;margin-top:2px;color:#14b87a}
+.attention-link{margin-top:auto;font-weight:700;font-size:13.5px}
+.attention-restore{margin:16px 0 0}
+.attention-restore button{display:inline-flex;align-items:center;gap:6px}
+.app-shell[data-theme=dark] .attention-card{--tone-bg:#25324f}
+.app-shell[data-theme=dark] .attention-card.tone-amber{--tone:#f2b544}
+.app-shell[data-theme=dark] .attention-card.tone-red{--tone:#ff7a70}
+.app-shell[data-theme=dark] .attention-card.tone-blue{--tone:#7da2ff}
+.app-shell[data-theme=dark] .attention-card.tone-violet{--tone:#a98bff}
+.app-shell[data-theme=dark] .attention-row{background:#1d2c47;border-color:#34476b}
+.app-shell[data-theme=dark] .attention-row-text small{color:#9fb3d3}
+.app-shell[data-theme=dark] .attention-empty{background:#1a2a45;color:#b8cbe4}
+.app-shell[data-theme=dark] .attention-x{color:#8fa4c6}
+.app-shell[data-theme=dark] .attention-x:hover{background:#4a2638;color:#ffb3bf}
+
+/* ---------- Subscription panel ---------- */
+.subscription-panel{padding:22px 24px 20px;display:grid;gap:14px}
+.subscription-panel>*{margin-top:0;margin-bottom:0}
+.subscription-panel .panel-title{align-items:center;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.subscription-panel .panel-title h2{display:flex;align-items:center;gap:10px;font-size:19px}
+.subscription-panel .panel-title h2 svg{color:var(--blue)}
+.subscription-panel .badge{text-transform:capitalize;padding:5px 12px;background:var(--grad);color:#fff;border:0;font-weight:700}
+.subscription-panel>p:first-of-type{font-size:15px;color:var(--ink)}
+.subscription-panel .notice{margin:0;padding:14px 16px;border-radius:14px;border:1px solid #cfdcf8;border-left:4px solid var(--blue);background:linear-gradient(180deg,#f4f7ff,#fff);line-height:1.55;font-size:13.5px}
+.subscription-panel .billing-plan-picker{display:grid;gap:14px}
+.subscription-panel .form-grid{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+.subscription-panel .form-grid label{display:grid;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.01em}
+.subscription-panel .form-grid select,.subscription-panel .form-grid input{min-height:46px;font-weight:600;font-size:15px}
+.subscription-panel .billing-plan-picker>.notice:not(:first-child){border-left-color:#14b87a;background:linear-gradient(180deg,#effcf6,#fff);font-size:15px}
+.subscription-panel .primary.compact{min-height:46px;padding:0 22px;font-size:15px;justify-self:start}
+.subscription-panel .small-copy{font-size:12.5px;line-height:1.6}
+.subscription-panel .subscription-manage{display:inline-flex;align-items:center;min-height:42px;padding:0 16px;cursor:pointer;font-weight:700;list-style:none}
+.subscription-panel .subscription-manage::-webkit-details-marker{display:none}
+.subscription-panel .workspace-details>summary,.subscription-panel .billing-cancel-details>summary{cursor:pointer}
+.app-shell[data-theme=dark] .subscription-panel .panel-title{border-color:#34476b}
+.app-shell[data-theme=dark] .subscription-panel .notice{background:linear-gradient(180deg,#1e2f4d,#1a2943);border-color:#405778;border-left-color:#5a8bff;color:#e6edff}
+.app-shell[data-theme=dark] .subscription-panel .billing-plan-picker>.notice:not(:first-child){background:linear-gradient(180deg,#143a30,#13322b);border-left-color:#2fd69a}
+@media(max-width:640px){.subscription-panel{padding:18px 16px}.subscription-panel .form-grid{grid-template-columns:1fr}}
