@@ -212,3 +212,25 @@ input:focus,select:focus,textarea:focus{outline:3px solid #2457e826;border-color
 #online-payment{scroll-margin-top:90px}
 .app-shell[data-theme=dark] .document-heading{border-bottom-color:#2a3a58}
 .app-shell[data-theme=dark] .document-due{background:#1e2f4d;color:#cfe0ff}
+
+/* Send invoice panel */
+.send-invoice summary{display:flex;align-items:center;gap:8px;font-weight:700}
+.send-invoice fieldset{border:0;padding:0;margin:12px 0 0;display:grid;gap:12px}
+.send-invoice textarea{font-family:inherit;line-height:1.55}
+/* Printed / customer-facing invoice page */
+.print-document{background:#fff;border:1px solid var(--line);border-top:0;border-radius:var(--radius-lg);box-shadow:var(--shadow-md);position:relative;overflow:hidden;padding:56px 52px 40px}
+.print-document::before{content:"";position:absolute;left:0;right:0;top:0;height:8px;background:var(--grad)}
+.print-document>header{align-items:flex-start;padding-bottom:22px;margin-bottom:22px;border-bottom:1px solid var(--line)}
+.print-document>header h1{font-size:40px;letter-spacing:-.05em;margin:2px 0 0;color:var(--navy)}
+.print-document>header .eyebrow{font-size:15px;font-weight:800;letter-spacing:.02em;color:var(--blue-deep);text-transform:none}
+.print-document>header>div:last-child{text-align:right}
+.print-document>header>div:last-child strong{font-size:20px;color:var(--navy)}
+.print-document th{background:var(--navy);color:#fff;letter-spacing:.06em;border-radius:0}
+.print-document td{border-bottom:1px solid var(--line)}
+.print-document .amount-summary{margin-left:auto;max-width:340px;border-radius:var(--radius);background:var(--surface)}
+.print-document .grand-total{color:var(--blue-deep)}
+.print-document .notice{border-radius:10px;font-weight:700;letter-spacing:.04em}
+.print-document footer{text-align:center}
+@media(max-width:640px){.print-document{padding:36px 20px 28px}.print-document>header h1{font-size:30px}}
+@media print{.print-document{box-shadow:none;overflow:visible;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:0}.print-document::before{height:6px;position:static;display:block;margin-bottom:18px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.print-document th{background:var(--navy)!important;color:#fff!important}}
+.app-shell[data-theme=dark] .send-invoice textarea{background:#16233c}
