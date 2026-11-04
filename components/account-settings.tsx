@@ -24,6 +24,7 @@ export function AccountShell({initial,demo,current,children,assistantEnabled=fal
     if(demo)window.addEventListener('mako-demo-reset',reset);
     return()=>{media.removeEventListener('change',update);window.removeEventListener('mako-demo-reset',reset);};
   },[demo]);
+  useEffect(()=>{const apply=(event:Event)=>{const data=(event as CustomEvent).detail;if(!data||typeof data!=='object')return;setSettings(old=>({...old,...(['light','dark','system'].includes(data.appearance)?{appearance:data.appearance}:{}),...(['comfortable','compact'].includes(data.density)?{density:data.density}:{}),...(typeof data.reduced_motion==='boolean'?{reducedMotion:data.reduced_motion}:{})}));};window.addEventListener('mako-fin-preferences',apply);return()=>window.removeEventListener('mako-fin-preferences',apply);},[]);
   function change(value:AccountSettings){setSettings(value);if(demo){try{sessionStorage.setItem('mako-demo-account',JSON.stringify(value));}catch{/* Preferences remain in memory. */}}}
   function navigate(event:MouseEvent<HTMLDivElement>){
     if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
