@@ -141,3 +141,5 @@ input:focus,select:focus,textarea:focus{outline:3px solid #2457e826;border-color
 .app-shell[data-theme=dark] .today-time{color:#9fb3d3}
 .app-shell[data-theme=dark] .today-done{color:#7de3b5}
 @media(max-width:600px){.today-card{flex-direction:column;align-items:stretch}.today-main{flex:0 0 auto}.today-actions,.today-form{width:100%}.today-actions .compact{flex:1}}
+
+.inline-check{display:flex;align-items:center;gap:8px;font-size:13px;margin:8px 0}.inline-check input{width:auto;margin:0}
