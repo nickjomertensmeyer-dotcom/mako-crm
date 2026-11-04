@@ -33,3 +33,17 @@ export async function workspaceNeedsAttention():Promise<{invoices:string[];leads
  }
  return found;
 }
+
+// Dismissed "Needs attention" items, saved per person so they follow them across devices.
+// If the table is unavailable these quietly return nothing and the browser copy still works.
+const dismissalKey=/^(lead|invoice|work|conn):[A-Za-z0-9_-]{1,64}$/;
+export async function loadDismissals():Promise<string[]>{
+ try{const {client,business}=await workspace();const result=await client.from('attention_dismissals').select('item_key').eq('workspace_id',business.id).limit(500);return result.error?[]:(result.data||[]).map((row:{item_key:string})=>row.item_key);}catch{return [];}
+}
+export async function saveDismissal(key:string):Promise<boolean>{
+ if(!dismissalKey.test(key))return false;
+ try{const {client,business}=await workspace();const result=await client.from('attention_dismissals').upsert({workspace_id:business.id,item_key:key},{onConflict:'workspace_id,user_id,item_key',ignoreDuplicates:true});return !result.error;}catch{return false;}
+}
+export async function removeDismissals(keys?:string[]):Promise<boolean>{
+ try{const {client,business}=await workspace();let query=client.from('attention_dismissals').delete().eq('workspace_id',business.id);if(keys)query=query.in('item_key',keys.filter(k=>dismissalKey.test(k)).slice(0,500));const result=await query;return !result.error;}catch{return false;}
+}

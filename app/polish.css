@@ -202,3 +202,5 @@ input:focus,select:focus,textarea:focus{outline:3px solid #2457e826;border-color
 .app-shell[data-theme=dark] .subscription-panel .notice{background:linear-gradient(180deg,#1e2f4d,#1a2943);border-color:#405778;border-left-color:#5a8bff;color:#e6edff}
 .app-shell[data-theme=dark] .subscription-panel .billing-plan-picker>.notice:not(:first-child){background:linear-gradient(180deg,#143a30,#13322b);border-left-color:#2fd69a}
 @media(max-width:640px){.subscription-panel{padding:18px 16px}.subscription-panel .form-grid{grid-template-columns:1fr}}
+
+.getting-started-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}

@@ -6,11 +6,11 @@ import {workspaceNeedsAttention} from '@/app/workspace/attention-actions';
 import {attentionItems} from '@/lib/workspace-attention';
 import {localDay} from '@/lib/boards';
 import {demoBoards} from '@/lib/demo-boards';
-import {onDismissalsChange,readDismissed} from '@/lib/attention-dismissed';
+import {onDismissalsChange,readDismissed,syncDismissals} from '@/lib/attention-dismissed';
 
 export function AttentionNavLink({demo,current,modules,workspaceId}:{demo:boolean;current:string;modules:string[];workspaceId?:string}){
  const [records,setRecords]=useState<string[]>([]),[connections,setConnections]=useState<string[]>([]),[dismissed,setDismissed]=useState<Set<string>>(new Set());
- useEffect(()=>{const sync=()=>setDismissed(readDismissed());sync();return onDismissalsChange(sync);},[]);
+ useEffect(()=>{const sync=()=>setDismissed(readDismissed());sync();if(!demo)void syncDismissals();return onDismissalsChange(sync);},[demo]);
  const moduleKey=modules.join(',');
  useEffect(()=>{
   let cancelled=false,request=0;
