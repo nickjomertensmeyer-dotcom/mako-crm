@@ -29,7 +29,7 @@ export async function login(form: FormData) {
   if (error) message('/login', 'We couldn’t sign you in. Check your email and password, or reset your password.');
   redirect((await cookies()).has(TEAM_COOKIE)?'/join':(await cookies()).get(PILOT_COOKIE)?'/pilot':'/workspace');
 }
-export async function logout() { const client = await supabase(); await client.auth.signOut(); redirect('/login'); }
+export async function logout() { const client = await supabase(); await client.auth.signOut({scope:'local'}); redirect('/login'); }
 export async function requestReset(form: FormData) {
   const client = await supabase();
   const origin = process.env.NEXT_PUBLIC_SITE_URL;

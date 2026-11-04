@@ -1,3 +1,4 @@
+import {logout} from '@/app/auth/actions';
 import {PilotVisit} from '@/components/pilot-visit';
 import {TeamManagement} from '@/components/team-management';
 import {PilotBanner} from '@/components/pilot-banner';
@@ -20,7 +21,7 @@ import {redirect} from 'next/navigation';
 export default async function Page({searchParams}:{searchParams:Promise<{view?:string;message?:string;document?:string;new?:string;edit?:string;reviewFor?:string;editWork?:string;record?:string}>}){
  const {client:authClient}=await identity();const {data:isAdmin}=await authClient.rpc('is_platform_admin');if(isAdmin)redirect('/owner');
  const {client,user,business,role}=await workspace();const params=await searchParams;const {view='overview',message}=params;
- if(business.archived_at)return <main id="main" className="onboarding"><section className="panel"><h1>This business has been archived.</h1><p>Your records are retained, but workspace access is disabled. Contact Mako to request restoration. Archiving does not cancel any subscription.</p><a href="mailto:makocrm@gmail.com">Contact Mako</a><SubscriptionPanel/><p><a href="/login">Back to login</a></p></section></main>;
+ if(business.archived_at)return <main id="main" className="onboarding"><section className="panel"><h1>This business has been archived.</h1><p>Your records are retained, but workspace access is disabled. Contact Mako to request restoration. Archiving does not cancel any subscription.</p><a href="mailto:makocrm@gmail.com">Contact Mako</a><SubscriptionPanel/><form action={logout}><button type="submit" className="secondary">Back to login</button></form></section></main>;
  const canContacts=business.modules.includes('customers')||business.modules.includes('leads');
  const [{data:contacts,error:contactError,count:contactCount},{data:tasks,error:taskError,count:taskCount},{data:summary}]=await Promise.all([
   canContacts?client.from('contacts').select('*',{count:'exact'}).eq('workspace_id',business.id).order('created_at',{ascending:false}).limit(1000):Promise.resolve({data:[],error:null,count:0}),
