@@ -33,3 +33,5 @@ test('expanded industry database validation preserves owners, records, provision
   await db.exec('reset role');assert.equal((await db.query("select has_function_privilege('anon','public.configure_workspace(uuid,text,text,text[])','execute') allowed")).rows[0].allowed,false);
  }finally{await db.close();}
 });
+
+test('lawn care includes every general business tool',()=>{for(const tool of recommendedTools('General business'))assert.ok(recommendedTools('Landscaping & lawn care').includes(tool));});

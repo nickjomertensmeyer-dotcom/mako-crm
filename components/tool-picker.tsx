@@ -15,7 +15,7 @@ const tools={
   booking:{label:'Online booking',description:'Publish appointment slots',icon:BookingIcon},
   projects:{label:'Projects & costs',description:'Milestones, time and expenses',icon:ProjectIcon},
   inventory:{label:'Inventory & purchasing',description:'Stock ledger, suppliers and orders',icon:InventoryIcon},
-  team:{label:'Team',description:'Planned workspace feature',icon:UsersRound},
+  team:{label:'Team',description:'Manage users and invitations',icon:UsersRound},
 };
 export function ToolPicker({selected,onChange}:{selected:readonly string[];onChange:(next:string[])=>void}){
   return <div className="tool-picker" role="group" aria-label="Workspace tools">{modules.map((key,index)=>{
@@ -23,7 +23,7 @@ export function ToolPicker({selected,onChange}:{selected:readonly string[];onCha
     return <label className={`tool-choice${checked?' is-selected':''}`} data-accent={index%3} key={key}>
       <input type="checkbox" name="modules" value={key} aria-label={key} checked={checked} onChange={event=>onChange(event.target.checked?[...selected,key]:selected.filter(value=>value!==key))}/>
       <span className="tool-choice-top" aria-hidden="true"><span className="tool-choice-icon"><Icon size={21}/></span><span className="tool-choice-check">{checked?<Check size={14}/>:<Plus size={14}/>}</span></span>
-      <span className="tool-choice-name">{tool.label}{key==='team'&&<small>Soon</small>}</span><span className="tool-choice-description">{tool.description}</span>
+      <span className="tool-choice-name">{tool.label}</span><span className="tool-choice-description">{tool.description}</span>
       <span className="tool-choice-state" aria-hidden="true">{checked?'Selected':'Add to workspace'}</span>
     </label>;
   })}</div>;
