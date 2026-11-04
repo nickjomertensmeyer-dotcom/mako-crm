@@ -1,13 +1,13 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import {Check,Copy,Maximize2,Minimize2,Minus,RotateCcw,Send,X} from 'lucide-react';
+import {Check,Copy,Minus,RotateCcw,Send,X} from 'lucide-react';
 import {SharkyIcon} from './sharky-icon';
 import {useRouter} from 'next/navigation';
 import type {ChatMessage} from '@/lib/sharky';
 import type {FinAction} from '@/lib/fin';
 import {finActionNames} from '@/lib/fin-actions';
 type Preview={request_id:string;cost:number;customer:string|null;action:Omit<FinAction,'lines'>&{lines:{service_id:string;description:string;quantity:number;unit_cents:number}[]}};
-export function FinAiPanel({active,expanded,onExpand,onMinimize,onHide}:{active:boolean;expanded:boolean;onExpand:()=>void;onMinimize:()=>void;onHide:()=>void}){
+export function FinAiPanel({active,onMinimize,onHide}:{active:boolean;onMinimize:()=>void;onHide:()=>void}){
  const router=useRouter();
  const input=useRef<HTMLTextAreaElement>(null),log=useRef<HTMLDivElement>(null);
  const [balance,setBalance]=useState<{remaining:number;allowance:number;resets_at?:string;paid?:boolean;sandbox?:boolean}|null>(null),[consent,setConsent]=useState(false),[question,setQuestion]=useState(''),[messages,setMessages]=useState<ChatMessage[]>([]),[preview,setPreview]=useState<Preview|null>(null),[pending,setPending]=useState(false),[error,setError]=useState(''),[copied,setCopied]=useState<number|null>(null),[saved,setSaved]=useState<{id:string;kind:string;view?:string;navigate?:boolean;preferences?:Record<string,unknown>}|null>(null);
@@ -32,7 +32,7 @@ export function FinAiPanel({active,expanded,onExpand,onMinimize,onHide}:{active:
   catch(e){setError(e instanceof Error?e.message:'Could not save.');}finally{setPending(false);void refresh();}
  }
  const view=saved?.view||(saved?.kind==='task'?'tasks':saved?.kind==='quote'?'quotes':'schedule');
- return <><header><SharkyIcon size={30}/><div><h2>Fin</h2><p>Your business assistant: ask, plan, draft, do.</p></div><button type="button" aria-label="Start a new Fin chat" title="New chat" disabled={pending||Boolean(preview)} onClick={()=>{setMessages([]);setQuestion('');setSaved(null);setError('');input.current?.focus();}}><RotateCcw size={17}/></button><button type="button" aria-label={expanded?'Collapse Fin chat':'Expand Fin chat'} title={expanded?'Collapse':'Expand'} onClick={onExpand}>{expanded?<Minimize2 size={17}/>:<Maximize2 size={17}/>}</button><button type="button" aria-label="Minimize Fin" title="Minimize" onClick={onMinimize}><Minus size={18}/></button><button type="button" aria-label="Hide Fin completely" title="Hide Fin" onClick={onHide}><X size={17}/></button></header>
+ return <><header><SharkyIcon size={30}/><div><h2>Fin</h2><p>Your business assistant: ask, plan, draft, do.</p></div><button type="button" aria-label="Start a new Fin chat" title="New chat" disabled={pending||Boolean(preview)} onClick={()=>{setMessages([]);setQuestion('');setSaved(null);setError('');input.current?.focus();}}><RotateCcw size={17}/></button><button type="button" aria-label="Minimize Fin" title="Minimize" onClick={onMinimize}><Minus size={18}/></button><button type="button" aria-label="Hide Fin completely" title="Hide Fin" onClick={onHide}><X size={17}/></button></header>
  <details className="fin-credit-details"><summary>{balance?`${balance.remaining} / ${balance.allowance} credits available`:'Loading credits…'}</summary><p>Answers and everyday changes: 1 credit. Work, document drafts, and workspace items: 3. Confirm changes before saving. Cancelled or failed actions release credits. No automatic overage charges.</p>{balance?.resets_at&&<p>Resets {new Date(balance.resets_at).toLocaleDateString()}. Shared by your business.</p>}{balance?.sandbox&&<p>QA workspace · paid sandbox credits. No real subscription payment was taken.</p>}</details>
  <div className="sharky-messages fin-ai-messages" ref={log} role="log" aria-label="Fin conversation" aria-live="polite">
   {!messages.length&&!preview&&<div className="sharky-welcome"><h3>How can I help?</h3><p>I can look things up, plan your day, draft customer messages, and make changes for you. I always show you a preview before saving anything.</p></div>}
