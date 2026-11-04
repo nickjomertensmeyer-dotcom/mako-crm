@@ -114,3 +114,9 @@ input:focus,select:focus,textarea:focus{outline:3px solid #2457e826;border-color
 .sharky-chat.is-resizing *{pointer-events:none}
 .sharky-chat.is-resizing .fin-grip{pointer-events:auto}
 @media(max-width:720px){.fin-grip{display:none}.fin-ai-chat.grip-top>header{padding-left:8px}.fin-ai-chat.grip-bottom>form{padding-left:14px}}
+
+/* Team page: seat meter */
+.seat-meter{height:10px;border-radius:999px;background:#e4e9f2;overflow:hidden;margin:10px 0 8px}
+.seat-meter>span{display:block;height:100%;border-radius:999px;background:var(--grad);transition:width .3s var(--ease)}
+.seat-meter>span[data-full=true]{background:linear-gradient(90deg,#e8a124,#e2572b)}
+.app-shell[data-theme=dark] .seat-meter{background:#2a3b58}
