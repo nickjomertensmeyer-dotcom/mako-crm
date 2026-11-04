@@ -1,5 +1,6 @@
 import {createClient} from '@supabase/supabase-js';
 import {timingSafeEqual} from 'node:crypto';
+import {emailHtml} from '@/lib/email-html';
 export const maxDuration=300;
 export async function GET(request:Request){
  const expected=process.env.CRON_SECRET;const actual=request.headers.get('authorization')||'';
@@ -18,7 +19,17 @@ export async function GET(request:Request){
     if(!invoice||!['Issued','Partial'].includes(invoice.status)||invoice.paid_cents>=invoice.total_cents){await client.from('email_followups').update({status:'Cancelled'}).eq('id',item.id).eq('status','Processing');continue;}
     body=body.replaceAll('{{balance}}',new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format((invoice.total_cents-invoice.paid_cents)/100));
    }
-   const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${apiKey}`,'Content-Type':'application/json','Idempotency-Key':`mako-followup-${item.id}`},body:JSON.stringify({from,to:[item.recipient],subject:item.subject,text:body}),signal:AbortSignal.timeout(10000)});
+   // Branded HTML copy + the business name as sender name + replies go to the workspace owner. All best-effort: failures fall back to the plain message.
+   let business='',replyTo='';
+   try{
+    const {data:ws}=await client.from('workspaces').select('name').eq('id',item.workspace_id).maybeSingle();business=String(ws?.name||'').replace(/[<>"\r\n]/g,'').trim().slice(0,60);
+    const {data:owner}=await client.from('memberships').select('user_id').eq('workspace_id',item.workspace_id).eq('role','owner').limit(1).maybeSingle();
+    if(owner?.user_id){const {data:u}=await client.auth.admin.getUserById(owner.user_id);const e=u?.user?.email;if(e&&/^[^\s<>@,;]+@[^\s<>@,;]+$/.test(e))replyTo=e;}
+   }catch{}
+   const fromHeader=business&&!from.includes('<')?`${business} via Mako <${from}>`:from;
+   const payload:Record<string,unknown>={from:fromHeader,to:[item.recipient],subject:item.subject,text:body,html:emailHtml(body,business||'Mako CRM')};
+   if(replyTo)payload.reply_to=replyTo;
+   const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${apiKey}`,'Content-Type':'application/json','Idempotency-Key':`mako-followup-${item.id}`},body:JSON.stringify(payload),signal:AbortSignal.timeout(10000)});
    if(response.ok){const result=await response.json();const {error:saveError}=await client.from('email_followups').update({status:'Sent',provider_id:result.id}).eq('id',item.id).eq('status','Processing');if(saveError)failed++;else sent++;}
    else{await client.from('email_followups').update({status:'Failed',error:'Email provider rejected the request. Contact Mako.'}).eq('id',item.id);failed++;}
   }catch{await client.from('email_followups').update({status:'Failed',error:'Delivery outcome is uncertain. Ask Mako to check provider logs before resending.'}).eq('id',item.id);failed++;}
