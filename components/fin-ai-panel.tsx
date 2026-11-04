@@ -7,7 +7,7 @@ type Preview={request_id:string;cost:number;customer:string|null;action:Omit<Fin
 export function FinAiPanel({onClose}:{onClose:()=>void}){
  const router=useRouter();
  const [balance,setBalance]=useState<{remaining:number;allowance:number;resets_at?:string;paid?:boolean;sandbox?:boolean}|null>(null),[consent,setConsent]=useState(false),[question,setQuestion]=useState(''),[messages,setMessages]=useState<ChatMessage[]>([]),[preview,setPreview]=useState<Preview|null>(null),[pending,setPending]=useState(false),[error,setError]=useState(''),[saved,setSaved]=useState<{id:string;kind:string}|null>(null);
- async function refresh(){try{const r=await fetch('/api/assistant',{cache:'no-store'});if(r.ok)setBalance(await r.json());}catch{/* Keep the prior balance. */}}
+ async function refresh(){try{const r=await fetch('/api/assistant',{cache:'no-store'});if(r.ok){const data=await r.json();setBalance(data);if(data.pending)setPreview(data.pending);}}catch{/* Keep the prior balance. */}}
  useEffect(()=>{void refresh();},[]);
  async function send(){
   if(pending||preview||!consent||!question.trim())return;

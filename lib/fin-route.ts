@@ -9,13 +9,15 @@ export const runtime='nodejs';
 const model='gpt-5.6-terra';
 const json=(value:unknown,status=200)=>NextResponse.json(value,{status,headers:{'Cache-Control':'no-store'}});
 export async function GET(){
- const {client,business}=await workspace();
+ const {client,business,user}=await workspace();
  let {data,error}=await client.rpc('fin_balance',{target:business.id});
  if(!error&&data.enabled&&!data.paid&&business.status==='active'&&process.env.FIN_CREDITS_ENABLED==='true'){
   try{await reconcileFinCredits(business.id);const next=await client.rpc('fin_balance',{target:business.id});data=next.data;error=next.error;}catch{/* No unverified credit grants. */}
  }
  if(error)return json({enabled:false,remaining:0,allowance:0});
- return json({...data,enabled:data.enabled&&business.status==='active'&&process.env.FIN_AI_ENABLED==='true'&&Boolean(process.env.OPENAI_API_KEY),active:business.status==='active'});
+ const {data:prepared}=await billingClient().from('fin_requests').select('id,credits,proposal').eq('workspace_id',business.id).eq('user_id',user.id).eq('state','prepared').gt('expires_at',new Date().toISOString()).order('created_at',{ascending:false}).limit(1).maybeSingle();
+ const {data:customer}=prepared?.proposal?.contact_id?await client.from('contacts').select('name').eq('workspace_id',business.id).eq('id',prepared.proposal.contact_id).maybeSingle():{data:null};
+ return json({...data,pending:prepared?{request_id:prepared.id,cost:prepared.credits,action:prepared.proposal,customer:customer?.name||null}:null,enabled:data.enabled&&business.status==='active'&&process.env.FIN_AI_ENABLED==='true'&&Boolean(process.env.OPENAI_API_KEY),active:business.status==='active'});
 }
 export async function POST(request:NextRequest){
  if(request.headers.get('origin')!==request.nextUrl.origin)return json({error:'Invalid request origin.'},403);
