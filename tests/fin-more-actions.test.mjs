@@ -22,6 +22,7 @@ test('trash and restore check the item is in the right state',()=>{
 test('service edits validate price and require a saved service',()=>{
  const r=validateFinResult(act('update_service',{record_id:'s1',unit_cents:6500}),ctx);
  assert.ok(r.action.display.some(d=>d.value==='$50.00 → $65.00'));
+ assert.equal(r.action.data.previous_unit_cents,5000);
  for(const data of [{record_id:'s1'},{record_id:'s1',unit_cents:-5},{record_id:'s1',unit_cents:1.5},{record_id:'zz',unit_cents:100},{record_id:'s1',name:'  '}])
   assert.throws(()=>validateFinResult(act('update_service',data),ctx));
  assert.equal(validateFinResult(act('archive_service',{record_id:'s1'}),ctx).cost,1);

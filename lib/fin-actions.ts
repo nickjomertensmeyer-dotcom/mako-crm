@@ -78,7 +78,7 @@ export function extendedFinAction(a:FinAction,ctx:FinContext){
   if(a.kind==='update_service'){
    if('name'in data){data.name=text(data.name,120);if(!data.name)throw Error('A service name cannot be empty.');display.push({label:'New name',value:String(data.name)});}
    if('description'in data){data.description=text(data.description,200);display.push({label:'Description',value:String(data.description)});}
-   if('unit_cents'in data){if(!Number.isSafeInteger(data.unit_cents)||Number(data.unit_cents)<0||Number(data.unit_cents)>100000000)throw Error('Give the service price in cents.');display.push({label:'Price',value:`$${(service.unit_cents/100).toFixed(2)} → $${(Number(data.unit_cents)/100).toFixed(2)}`});}
+   if('unit_cents'in data){if(!Number.isSafeInteger(data.unit_cents)||Number(data.unit_cents)<0||Number(data.unit_cents)>100000000)throw Error('Give the service price in cents.');data.previous_unit_cents=service.unit_cents;display.push({label:'Price',value:`$${(service.unit_cents/100).toFixed(2)} → $${(Number(data.unit_cents)/100).toFixed(2)}`});}
    if(display.length<2)throw Error('Specify what should change.');
   }else display.push({label:'Note',value:'Existing quotes and invoices keep their saved prices.'});
  }else throw Error('Unsupported action.');

@@ -40,6 +40,8 @@ begin
  else
   select * into s from public.service_catalog where id=(d->>'record_id')::uuid and workspace_id=target for update;
   if s.id is null or s.archived then raise exception 'Service unavailable';end if;
+  -- Reject the edit if the price changed since the preview was made.
+  if d ? 'previous_unit_cents' and s.unit_cents<>(d->>'previous_unit_cents')::bigint then raise exception 'Service changed. Please prepare a new preview';end if;
   record_id:=public.save_service(target,s.id,coalesce(nullif(trim(d->>'name'),''),s.name),coalesce(d->>'description',s.description),coalesce((d->>'unit_cents')::bigint,s.unit_cents),k='archive_service');
   v_result:=jsonb_build_object('view','quotes');
  end if;
