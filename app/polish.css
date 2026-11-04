@@ -99,15 +99,18 @@ input:focus,select:focus,textarea:focus{outline:3px solid #2457e826;border-color
 .fin-grip-l{left:0;top:18px;bottom:18px;width:9px;cursor:ew-resize}
 .fin-grip-v{left:18px;right:18px;height:9px;cursor:ns-resize}
 .fin-grip-v.top{top:0}.fin-grip-v.bottom{bottom:0}
-.fin-grip-c{left:0;width:20px;height:20px}
-.fin-grip-c.top{top:0;cursor:nwse-resize}.fin-grip-c.bottom{bottom:0;cursor:nesw-resize}
-.fin-grip-c i{position:absolute;left:5px;width:9px;height:9px;border-left:2px solid #ffffff99;opacity:.0;transition:opacity .15s}
-.fin-grip-c.top i{top:5px;border-top:2px solid #ffffff99;border-top-left-radius:6px}
-.fin-grip-c.bottom i{bottom:5px;border-bottom:2px solid #8aa0c8;border-left-color:#8aa0c8;border-bottom-left-radius:6px}
-.fin-ai-chat:hover .fin-grip-c i,.fin-grip:focus-visible i{opacity:1}
-.fin-grip:hover{background:#2457e822}
+.fin-grip-c{left:5px;width:26px;height:26px;display:grid;place-items:center;border-radius:9px;color:#fff;background:#ffffff2e;box-shadow:inset 0 0 0 1px #ffffff40;transition:background .15s,transform .15s}
+.fin-grip-c.top{top:7px;cursor:nwse-resize}
+.fin-grip-c.bottom{bottom:5px;cursor:nesw-resize;color:#2457e8;background:#2457e81a;box-shadow:inset 0 0 0 1px #2457e840}
+.fin-grip-c.bottom svg{transform:scaleY(-1)}
+.fin-grip-c:hover{background:#ffffff4d;transform:scale(1.08)}
+.fin-grip-c.bottom:hover{background:#2457e830}
+.app-shell[data-theme=dark] .fin-grip-c.bottom{color:#9db8ff;background:#9db8ff1f;box-shadow:inset 0 0 0 1px #9db8ff44}
+.fin-ai-chat.grip-top>header{padding-left:38px}
+.fin-ai-chat.grip-bottom>form{padding-left:38px}
+.fin-grip-l:hover,.fin-grip-v:hover{background:#2457e822}
 .fin-grip:focus-visible{outline:2px solid #00c2e0;outline-offset:-2px;border-radius:6px}
 .sharky-chat.is-resizing{user-select:none;-webkit-user-select:none}
 .sharky-chat.is-resizing *{pointer-events:none}
 .sharky-chat.is-resizing .fin-grip{pointer-events:auto}
-@media(max-width:720px){.fin-grip{display:none}}
+@media(max-width:720px){.fin-grip{display:none}.fin-ai-chat.grip-top>header{padding-left:8px}.fin-ai-chat.grip-bottom>form{padding-left:14px}}
