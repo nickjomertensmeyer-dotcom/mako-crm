@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useState} from 'react';
-import {CheckCircle2,Phone,PlayCircle,Sun} from 'lucide-react';
+import {CheckCircle2,MessageSquare,Phone,PlayCircle,Sun} from 'lucide-react';
 import {changeWorkStatus} from '@/app/workspace/business-actions';
 import type {WorkItem,CustomerOption} from '@/lib/business-tools';
 const localDay=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
@@ -18,6 +18,7 @@ export function TodayBoard({items,contacts,enabled,demo=false}:{items:WorkItem[]
    return <article className="today-card" data-status={item.status} key={item.id}>
     <div className="today-main"><strong>{item.title}</strong><span className="today-time">{clock(item.scheduled_time)} · {item.kind}{customer?` · ${customer.name}`:''}</span>{item.notes&&<p className="small-copy">{item.notes}</p>}</div>
     <div className="today-actions">
+     {customer?.phone&&!finished&&<a className="secondary compact today-call" href={`sms:${customer.phone.replace(/[^+\d]/g,'')}?&body=${encodeURIComponent(`Hi ${customer.name.split(' ')[0]}, I'm on my way for ${item.title}. See you soon!`)}`} aria-label={`Text ${customer.name} that you are on your way`}><MessageSquare size={17}/> On my way</a>}
      {customer?.phone&&<a className="secondary compact today-call" href={`tel:${customer.phone.replace(/[^+\d]/g,'')}`} aria-label={`Call ${customer.name}`}><Phone size={17}/> Call</a>}
      {finished?<span className="today-done"><CheckCircle2 size={18}/> Done</span>:<form action={changeWorkStatus} className="today-form"><input type="hidden" name="id" value={item.id}/><input type="hidden" name="kind" value={item.kind}/>
       {item.status==='Planned'&&<button className="secondary compact" name="status" value="In progress" disabled={!canAct}><PlayCircle size={17}/> Start</button>}
