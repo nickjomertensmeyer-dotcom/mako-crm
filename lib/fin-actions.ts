@@ -1,8 +1,8 @@
 import {operationKinds,validateOperation} from './operations.ts';
 import type {FinAction,FinContext} from './fin.ts';
-export const extendedFinKinds=['customer','lead','update_contact','update_task','preferences','navigate','service','operation','work_status','document_status','checklist','stock'] as const;
+export const extendedFinKinds=['customer','lead','update_contact','update_task','preferences','navigate','service','operation','work_status','document_status','checklist','stock','reschedule_work','trash_work','restore_work','update_service','archive_service'] as const;
 export const finViews=['overview','customers','leads','tasks','quotes','invoices','schedule','jobs','assets','recurring','booking','projects','inventory','team','connections','business-settings','settings','plan','support','followups','notifications'] as const;
-export const finActionNames:Record<string,string>={task:'Create task',appointment:'Create appointment',job:'Create job',quote:'Draft estimate',invoice:'Draft invoice',customer:'Add customer',lead:'Add lead',update_contact:'Update contact',update_task:'Update task',preferences:'Change your appearance',navigate:'Open page',service:'Save service',operation:'Save workspace item',work_status:'Update work status',document_status:'Update document status',checklist:'Add checklist item',stock:'Adjust inventory'};
+export const finActionNames:Record<string,string>={task:'Create task',appointment:'Create appointment',job:'Create job',quote:'Draft estimate',invoice:'Draft invoice',customer:'Add customer',lead:'Add lead',update_contact:'Update contact',update_task:'Update task',preferences:'Change your appearance',navigate:'Open page',service:'Save service',operation:'Save workspace item',work_status:'Update work status',document_status:'Update document status',checklist:'Add checklist item',stock:'Adjust inventory',reschedule_work:'Reschedule',trash_work:'Move to Trash',restore_work:'Restore from Trash',update_service:'Update service',archive_service:'Archive service'};
 const object=(value:unknown):Record<string,unknown>=>{if(!value||typeof value!=='object'||Array.isArray(value))throw Error('Invalid action details.');return value as Record<string,unknown>;};
 const text=(value:unknown,max=200)=>{if(typeof value!=='string'||value.length>max)throw Error('Check the action details.');return value.trim();};
 const fields=(data:Record<string,unknown>,allowed:string[])=>{if(Object.keys(data).some(k=>!allowed.includes(k)))throw Error('Unsupported action field.');};
@@ -57,6 +57,30 @@ export function extendedFinAction(a:FinAction,ctx:FinContext){
   data.previous_status=doc.status;display.push({label:'Document',value:doc.number},{label:'Status',value:String(data.status)});
  }else if(a.kind==='stock'){
   fields(data,['record_id','quantity','reason']);if(!ctx.operations?.some(o=>o.id===data.record_id&&o.kind==='product')||!Number.isFinite(data.quantity)||Number(data.quantity)===0||Math.abs(Number(data.quantity))>100000)throw Error('Choose an inventory item and valid stock adjustment.');data.reason=text(data.reason,300);if(!data.reason)throw Error('Give a reason for the adjustment.');display.push({label:'Quantity adjustment',value:String(data.quantity)},{label:'Reason',value:String(data.reason)});
+
+ }else if(a.kind==='reschedule_work'||a.kind==='trash_work'||a.kind==='restore_work'){
+  fields(data,a.kind==='reschedule_work'?['record_id','date','time','notes']:['record_id']);
+  const work=ctx.work?.find(w=>w.id===data.record_id);if(!work)throw Error('Search for the job or appointment first.');
+  if(a.kind==='restore_work'?!work.archived_at:Boolean(work.archived_at))throw Error(a.kind==='restore_work'?'That item is not in Trash.':'That item is already in Trash.');
+  display.push({label:'Work',value:work.title});
+  if(a.kind==='reschedule_work'){
+   const d=text(data.date,10),t=text(data.time,5);
+   if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||!Number.isFinite(Date.parse(d))||new Date(d).toISOString().slice(0,10)!==d)throw Error('Please specify a valid new date.');
+   if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(t))throw Error('Please specify a valid new local time.');
+   if('notes'in data)data.notes=text(data.notes,1000);
+   data.previous_date=work.scheduled_date||'';data.previous_time=(work.scheduled_time||'').slice(0,5);
+   display.push({label:'From',value:`${work.scheduled_date||'unscheduled'} ${(work.scheduled_time||'').slice(0,5)}`.trim()},{label:'To',value:`${d} ${t}`});
+  }else display.push({label:'Note',value:a.kind==='trash_work'?'Recoverable from Trash. Nothing is permanently deleted.':'Returns to your schedule.'});
+ }else if(a.kind==='update_service'||a.kind==='archive_service'){
+  fields(data,a.kind==='update_service'?['record_id','name','description','unit_cents']:['record_id']);
+  const service=ctx.services.find(s=>s.id===data.record_id);if(!service)throw Error('Search for the saved service first.');
+  display.push({label:'Service',value:service.name});
+  if(a.kind==='update_service'){
+   if('name'in data){data.name=text(data.name,120);if(!data.name)throw Error('A service name cannot be empty.');display.push({label:'New name',value:String(data.name)});}
+   if('description'in data){data.description=text(data.description,200);display.push({label:'Description',value:String(data.description)});}
+   if('unit_cents'in data){if(!Number.isSafeInteger(data.unit_cents)||Number(data.unit_cents)<0||Number(data.unit_cents)>100000000)throw Error('Give the service price in cents.');display.push({label:'Price',value:`$${(service.unit_cents/100).toFixed(2)} → $${(Number(data.unit_cents)/100).toFixed(2)}`});}
+   if(display.length<2)throw Error('Specify what should change.');
+  }else display.push({label:'Note',value:'Existing quotes and invoices keep their saved prices.'});
  }else throw Error('Unsupported action.');
  return {action:{...a,data,display},cost};
 }

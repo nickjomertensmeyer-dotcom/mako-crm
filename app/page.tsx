@@ -8,6 +8,7 @@ import {businessInfo} from '@/lib/business-info';
 import {ArrowUpRight,Check,Trees,CalendarDays,FileCheck2} from 'lucide-react';
 import {publicMetadata,publicSiteUrl} from '@/lib/public-metadata';
 import './homepage.css';
+import './polish-home.css';
 export const metadata=publicMetadata('Mako | CRM for Landscaping & Lawn Care','Keep lawn care customers, properties, quotes, jobs, and invoices together. Starter $49, Pro $100, Team $179 per month. Additional users $15/month.','/');
 const identity={'@context':'https://schema.org','@graph':[{'@type':'Organization','@id':`${publicSiteUrl}/#organization`,name:'Mako CRM',url:publicSiteUrl,logo:`${publicSiteUrl}/mako-email-logo.png`,email:businessInfo.supportEmail,slogan:'Stay sharp. Move faster.'},{'@type':'WebSite',name:'Mako CRM',url:publicSiteUrl,publisher:{'@id':`${publicSiteUrl}/#organization`}}]};
 const steps=[

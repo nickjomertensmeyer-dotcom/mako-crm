@@ -1,0 +1,77 @@
+/* Mako visual polish layer. Loaded last; only refines the existing design (type, depth, spacing, motion).
+   Remove the import in layout.tsx to return to the previous look. */
+:root{
+ --blue:#2457e8;--blue-deep:#1a3fb8;--violet:#6d3df0;--cyan:#00c2e0;--navy:#0f1c33;--ink:#16243d;
+ --muted:#64748b;--line:#e4e9f2;--surface:#f6f8fd;
+ --radius-sm:10px;--radius:14px;--radius-lg:22px;
+ --shadow-sm:0 1px 2px #0f1c330f,0 2px 6px #0f1c3308;
+ --shadow-md:0 2px 4px #0f1c330a,0 10px 28px #0f1c3312;
+ --shadow-lg:0 4px 8px #0f1c330a,0 24px 60px #1a3fb81f;
+ --grad:linear-gradient(135deg,#2457e8 0%,#5a46ee 55%,#7a3cf0 100%);
+ --font:ui-sans-serif,system-ui,-apple-system,"Segoe UI Variable Text","Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+ --ease:cubic-bezier(.2,.7,.2,1);
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+button,input,select,textarea{font-family:inherit}
+h1,h2,h3{font-weight:720;letter-spacing:-.035em}
+::selection{background:#2457e830}
+
+/* Buttons everywhere */
+.primary{background:var(--grad);border-radius:12px;box-shadow:0 1px 0 #ffffff33 inset,0 6px 18px #3f46e83d;transition:transform .2s var(--ease),box-shadow .2s var(--ease),filter .2s}
+.primary:hover,.primary:focus-visible{background:var(--grad);filter:brightness(1.07);box-shadow:0 1px 0 #ffffff33 inset,0 10px 26px #3f46e857;transform:translateY(-1px)}
+.secondary{border-radius:12px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-sm);transition:transform .2s var(--ease),box-shadow .2s var(--ease),border-color .2s}
+.secondary:hover{background:#fff;border-color:#bccaf2;box-shadow:var(--shadow-md);transform:translateY(-1px)}
+a:focus-visible,button:focus-visible{outline:3px solid #00c2e0aa;outline-offset:3px;border-radius:8px}
+input,select,textarea{border-radius:var(--radius-sm)}
+input:focus,select:focus,textarea:focus{outline:3px solid #2457e826;border-color:var(--blue)}
+
+/* ---------- Signed-in app ---------- */
+.app-shell{background:linear-gradient(180deg,#f6f8fd,#f1f4fb)}
+.app-header{background:#ffffffd9;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.sidebar nav a,.sidebar-bottom>a,.nav-button{border-radius:10px;transition:background .18s,color .18s,transform .18s var(--ease)}
+.sidebar nav a:hover,.nav-button:hover{transform:translateX(2px)}
+.panel{border-radius:var(--radius);box-shadow:var(--shadow-sm);border-color:var(--line);transition:box-shadow .2s var(--ease)}
+.panel:hover{box-shadow:var(--shadow-md)}
+.stats>*,.finance-strip>*{border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+.page-heading h1{font-weight:760;letter-spacing:-.045em}
+.task-row,.contact-row{transition:background .15s}
+.badge{border-radius:999px;font-weight:600}
+.pipeline-lane{border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+.record-dialog,.workspace-search-dialog{border-radius:var(--radius-lg);box-shadow:var(--shadow-lg)}
+
+/* ---------- Fin assistant ---------- */
+.sharky-bubble{width:66px;height:66px;border:0;border-radius:24px;background:linear-gradient(145deg,#1d3d78,#101c3a);box-shadow:0 0 0 2px #51dcec,0 10px 30px #1a3fb85c,0 0 38px #00c2e033;transition:transform .2s var(--ease),box-shadow .2s}
+.sharky-bubble:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 0 0 2px #7ff0ff,0 16px 36px #1a3fb870,0 0 48px #00c2e04d}
+.sharky-chat{border:1px solid #d3def5;border-top:0;border-radius:24px;box-shadow:0 30px 90px #0f1c3340,0 4px 12px #0f1c3314}
+.sharky-chat>header{padding:14px 14px;background:linear-gradient(120deg,#0e1b33,#1c3366 70%,#2b2f86);border-bottom:0}
+.sharky-chat>header h2{font-size:18px;letter-spacing:-.02em}
+.sharky-chat>header p{color:#b7cdf0}
+.sharky-chat>header button{background:#ffffff1c;color:#fff;border-radius:10px;transition:background .15s}
+.sharky-chat>header button:hover{background:#ffffff33}
+.sharky-messages{background:linear-gradient(180deg,#f8faff,#fff 120px);padding:16px}
+.sharky-welcome{padding:10px 8px 18px}
+.sharky-welcome h3{font-size:20px;letter-spacing:-.03em}
+.sharky-message{border:0;border-radius:16px 16px 16px 4px;background:#fff;box-shadow:var(--shadow-sm);border:1px solid #e6ecf6;padding:12px 14px}
+.sharky-message.user{background:var(--grad);border:0;border-radius:16px 16px 4px 16px;box-shadow:0 6px 18px #3f46e838}
+.sharky-message p{font-size:13.5px;line-height:1.7}
+.fin-copy{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:4px 9px;border:1px solid var(--line);border-radius:999px;background:#f6f8fd;color:#51627d;font-size:11px;font-weight:600;transition:background .15s,color .15s}
+.fin-copy:hover{background:#eef3ff;color:var(--blue)}
+.sharky-suggestions{gap:7px;padding:2px 14px 12px}
+.sharky-suggestions button{border:1px solid #d6dffa;border-radius:999px;background:#fff;color:#35459a;font-size:12px;font-weight:600;padding:7px 12px;box-shadow:var(--shadow-sm);transition:transform .15s var(--ease),border-color .15s,background .15s}
+.sharky-suggestions button:hover{transform:translateY(-1px);border-color:#9fb4f2;background:#f4f7ff}
+.fin-action-preview{border:1px solid #cfdcf8;border-left:4px solid var(--blue);border-radius:14px;background:linear-gradient(180deg,#f4f7ff,#fff);box-shadow:var(--shadow-md);padding:14px 16px;margin:12px 0}
+.fin-action-preview p{margin:5px 0;font-size:13px;line-height:1.55}
+.fin-action-buttons{display:flex;gap:8px;margin:12px 0 6px}
+.fin-action-buttons button{border:1px solid var(--line);border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;background:#fff;color:var(--ink);transition:transform .15s var(--ease),box-shadow .15s}
+.fin-action-buttons button:first-child{background:var(--grad);color:#fff;border:0;box-shadow:0 6px 16px #3f46e83a}
+.fin-action-buttons button:hover:not(:disabled){transform:translateY(-1px)}
+.fin-action-saved{padding:10px 12px;border-radius:12px;background:#e9f9f1;color:#0f6b46;font-size:13px;font-weight:600}
+.sharky-chat>form{border-top:1px solid var(--line);padding:12px 14px 8px;background:#fff}
+.sharky-chat textarea{border-radius:14px;background:#f6f8fd;border-color:var(--line);transition:border-color .15s,box-shadow .15s}
+.sharky-chat textarea:focus{background:#fff;border-color:var(--blue);box-shadow:0 0 0 4px #2457e81c;outline:none}
+.sharky-chat>form button[type=submit]{border-radius:12px}
+.fin-credit-details{border-bottom:1px solid var(--line);background:#fafbff;font-size:12px}
+.fin-credit-details summary{padding:8px 14px;cursor:pointer;color:#51627d;font-weight:600}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
