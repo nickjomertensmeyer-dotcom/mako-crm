@@ -74,4 +74,22 @@ input:focus,select:focus,textarea:focus{outline:3px solid #2457e826;border-color
 .sharky-chat>form button[type=submit]{border-radius:12px}
 .fin-credit-details{border-bottom:1px solid var(--line);background:#fafbff;font-size:12px}
 .fin-credit-details summary{padding:8px 14px;cursor:pointer;color:#51627d;font-weight:600}
+ /* Fin in dark mode: the polish layer above sets light surfaces, so restore dark ones. */
+.app-shell[data-theme=dark] .sharky-messages{background:linear-gradient(180deg,#1b2a45,#17243b 120px)}
+.app-shell[data-theme=dark] .sharky-welcome h3{color:#f1f5ff}
+.app-shell[data-theme=dark] .sharky-message{box-shadow:none;color:#e6edff}
+.app-shell[data-theme=dark] .sharky-chat>form{background:#17243b}
+.app-shell[data-theme=dark] .sharky-chat textarea{background:#0f1a2e;color:#e6edff;border-color:#405778}
+.app-shell[data-theme=dark] .sharky-chat textarea::placeholder{color:#8fa4c6}
+.app-shell[data-theme=dark] .sharky-chat textarea:focus{background:#0f1a2e;border-color:#5a8bff;box-shadow:0 0 0 4px #5a8bff33}
+.app-shell[data-theme=dark] .fin-credit-details{background:#18283f;border-color:#405778}
+.app-shell[data-theme=dark] .fin-credit-details summary{color:#c4d4f2}
+.app-shell[data-theme=dark] .sharky-suggestions button{box-shadow:none;background:#362b59;color:#e0d4ff;border-color:#5c4985}
+.app-shell[data-theme=dark] .sharky-suggestions button:hover{background:#43356d;border-color:#7a62b0}
+.app-shell[data-theme=dark] .fin-action-preview{background:linear-gradient(180deg,#1e2f4d,#1a2943);border-color:#405778;border-left-color:#5a8bff;color:#e6edff}
+.app-shell[data-theme=dark] .fin-action-buttons button{background:#243653;color:#e6edff;border-color:#405778}
+.app-shell[data-theme=dark] .fin-action-buttons button:first-child{background:var(--grad);color:#fff;border:0}
+.app-shell[data-theme=dark] .fin-action-saved{background:#133a2b;color:#8be3b9}
+.app-shell[data-theme=dark] .fin-copy{background:#243653;border-color:#405778;color:#c4d4f2}
+.app-shell[data-theme=dark] .fin-copy:hover{background:#2d4468;color:#fff}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
