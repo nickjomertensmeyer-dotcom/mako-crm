@@ -120,3 +120,24 @@ input:focus,select:focus,textarea:focus{outline:3px solid #2457e826;border-color
 .seat-meter>span{display:block;height:100%;border-radius:999px;background:var(--grad);transition:width .3s var(--ease)}
 .seat-meter>span[data-full=true]{background:linear-gradient(90deg,#e8a124,#e2572b)}
 .app-shell[data-theme=dark] .seat-meter{background:#2a3b58}
+
+/* Today board: phone-friendly crew list */
+.today-board .panel-title h2{display:flex;align-items:center;gap:8px}
+.today-progress{height:8px;border-radius:999px;background:#e4e9f2;overflow:hidden;margin:4px 0 14px}
+.today-progress>span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#14b87a,#00c2e0);transition:width .3s var(--ease)}
+.today-list{display:grid;gap:10px}
+.today-card{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:var(--radius);background:#fff;box-shadow:var(--shadow-sm)}
+.today-card[data-status="In progress"]{border-left-color:#e8a124;background:#fffaf0}
+.today-card[data-status="Completed"]{border-left-color:#14b87a;opacity:.78}
+.today-main{display:grid;gap:3px;min-width:0;flex:1 1 220px}
+.today-main strong{font-size:17px;letter-spacing:-.02em}
+.today-time{font-size:13px;color:var(--muted)}
+.today-actions,.today-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.today-actions .compact{min-height:46px;min-width:46px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-weight:700;font-size:15px}
+.today-done{display:inline-flex;align-items:center;gap:6px;color:#0f6b46;font-weight:700}
+.app-shell[data-theme=dark] .today-progress{background:#2a3b58}
+.app-shell[data-theme=dark] .today-card{background:#1d2c47;border-color:#405778;color:#e6edff}
+.app-shell[data-theme=dark] .today-card[data-status="In progress"]{background:#2d2a24}
+.app-shell[data-theme=dark] .today-time{color:#9fb3d3}
+.app-shell[data-theme=dark] .today-done{color:#7de3b5}
+@media(max-width:600px){.today-card{flex-direction:column;align-items:stretch}.today-main{flex:0 0 auto}.today-actions,.today-form{width:100%}.today-actions .compact{flex:1}}
