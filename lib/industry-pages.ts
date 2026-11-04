@@ -53,8 +53,8 @@ export const industryPages:IndustryPage[]=[
  {
   slug:'lawn-care',name:'Lawn care & landscaping businesses',shortName:'Lawn care',icon:'lawn',preset:'Landscaping & lawn care',
   title:'Lawn Care & Landscaping CRM for Leads, Jobs & Quotes | Mako CRM',
-  description:'Track lawn care inquiries, property notes, quotes, scheduled work, job checklists, and invoices with Mako CRM. Try the demo. Pro is $100/month.',
-  headline:'From the first yard inquiry to the finished job.',
+  description:'Lawn care and landscaping CRM for customers, properties, estimates, recurring visits, job checklists, and invoices. Plans from $49/month. Try the free demo.',
+  headline:'Your lawn care business. One connected CRM.',
   intro:'A CRM for lawn care and landscaping businesses that need a clear path from property inquiries and estimates to scheduled work and invoices.',
   example:{customer:'Alex Rivera',work:'Seasonal cleanup · front and back yard',status:'Estimate follow-up',notes:['Confirm debris removal in the scope','Side gate access needs a check','Schedule after the customer accepts the quote']},
   problem:{heading:'The property, the scope, and the follow-up all matter.',body:'A mowing inquiry is different from a seasonal cleanup or a landscaping project. Keep the property details and requested work with the lead, record what you still need to inspect, and give the estimate a next action. This helps you see which inquiries need a site visit, which quotes need a reply, and which jobs are ready to schedule.'},

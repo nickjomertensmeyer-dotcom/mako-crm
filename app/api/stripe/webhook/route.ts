@@ -2,6 +2,7 @@ import {syncBilling} from '@/lib/billing-sync';
 import {verifyStripeSignature} from '@/lib/billing-security';
 import {riskEventTypes} from '@/lib/billing-risk';
 import {syncBillingRisk} from '@/lib/billing-risk-sync';
+import {syncFinInvoice} from '@/lib/fin-credit-sync';
 export const runtime='nodejs';
 export async function POST(request:Request){
  const secret=process.env.STRIPE_WEBHOOK_SECRET,price=process.env.STRIPE_PRO_PRICE_ID;
@@ -19,6 +20,6 @@ export async function POST(request:Request){
  }
  if(!['checkout.session.completed','checkout.session.async_payment_succeeded','customer.subscription.created','customer.subscription.updated','customer.subscription.deleted','customer.subscription.paused','customer.subscription.resumed','invoice.paid','invoice.payment_failed','invoice.payment_action_required'].includes(event.type))return Response.json({received:true});
  const customer=event.data?.object?.customer;if(typeof customer!=='string'||!/^cus_[A-Za-z0-9]+$/.test(customer)||typeof event.id!=='string')return new Response(null,{status:400});
- try{await syncBilling(customer,event.id);return Response.json({received:true});}
+ try{await syncBilling(customer,event.id);if(process.env.FIN_CREDITS_ENABLED==='true'&&event.type==='invoice.paid')await syncFinInvoice(event.data.object.id,customer);return Response.json({received:true});}
  catch{return Response.json({error:'Subscription sync failed; retry required'},{status:503});}
 }
