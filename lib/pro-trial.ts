@@ -5,13 +5,13 @@ export const PRO_TRIAL_OFFER = 'pro_7_day_v1';
 export function eligibleForProTrial(subscriptionCount:number, linkedSubscription:string|null|undefined, hasMore=false){
  return subscriptionCount===0&&!linkedSubscription&&!hasMore;
 }
-export function proCheckoutParameters(customer:string,workspaceId:string,price:string,returnUrl:string,trial:boolean):Record<string,string>{
+export function proCheckoutParameters(customer:string,workspaceId:string,price:string,returnUrl:string,trial:boolean,offer={name:'Pro',monthlyCents:10000,users:1}):Record<string,string>{
  return {
   integration_identifier:'mako_pro_qmpvaztr',mode:'subscription',customer,client_reference_id:workspaceId,
-  'subscription_data[billing_mode][type]':'flexible','line_items[0][price]':price,'line_items[0][quantity]':'1',
+  'subscription_data[billing_mode][type]':'flexible','line_items[0][price]':price,'line_items[0][quantity]':String(offer.users),
   payment_method_collection:'always','subscription_data[metadata][workspace_id]':workspaceId,
   ...(trial?{'subscription_data[trial_period_days]':String(PRO_TRIAL_DAYS),'subscription_data[trial_settings][end_behavior][missing_payment_method]':'cancel','subscription_data[metadata][mako_trial]':PRO_TRIAL_OFFER}:{}),
-  'custom_text[submit][message]':trial?'7 days free. Then $50 USD/month plus applicable tax, charged automatically unless you cancel before the trial ends. Cancel in Plan & data → Manage / cancel subscription.':'$50 USD/month plus applicable tax. Renews automatically until canceled.',
+  'custom_text[submit][message]':trial?`7 days free. Then $${offer.monthlyCents/100} USD/month for Mako ${offer.name} (${offer.users} users), plus applicable tax, charged automatically unless you cancel before the trial ends. Cancel in Plan & data → Manage / cancel subscription.`:`$${offer.monthlyCents/100} USD/month for Mako ${offer.name} (${offer.users} users), plus applicable tax. Renews automatically until canceled.`,
   success_url:returnUrl+'&message='+encodeURIComponent(trial?'Your trial activation is being verified. Pro access activates automatically after Stripe confirms your payment details.':'Your payment is being verified. Pro access activates automatically after confirmation.'),
   cancel_url:returnUrl,
  };

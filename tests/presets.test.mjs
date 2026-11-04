@@ -6,7 +6,8 @@ import {businessTypes,industries,modules,recommendedTools} from '../lib/presets.
 test('industry presets are complete, backwards compatible, and recommend only implemented tools',()=>{
  assert.equal(industries.length,28);assert.equal(new Set(industries).size,28);
  for(const name of ['General business','Mobile detailing','Tree service','Cleaning','Consulting','Other'])assert.ok(industries.includes(name));
- for(const type of businessTypes){const selected=recommendedTools(type.name);assert.ok(type.description);assert.ok(selected.length);assert.equal(new Set(selected).size,selected.length);assert.ok(selected.every(key=>modules.includes(key)&&key!=='team'));}
+ for(const type of businessTypes){const selected=recommendedTools(type.name);assert.ok(type.description);assert.ok(selected.length);assert.equal(new Set(selected).size,selected.length);assert.ok(selected.every(key=>modules.includes(key)));}
+ assert.ok(recommendedTools('Mobile detailing').includes('team'));assert.ok(recommendedTools('Mobile detailing').includes('assets'));assert.ok(!recommendedTools('Mobile detailing').includes('inventory'));
  assert.ok(recommendedTools('HVAC').includes('jobs'));assert.ok(!recommendedTools('Beauty & wellness').includes('jobs'));
  const copy=recommendedTools('HVAC');copy.length=0;assert.ok(recommendedTools('HVAC').length);
  assert.deepEqual(recommendedTools('unknown'),recommendedTools('General business'));

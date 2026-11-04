@@ -17,7 +17,7 @@ export function AttentionNavLink({demo,current,modules,workspaceId}:{demo:boolea
    const version=++request;
    if(demo){
     let data=demoBoards();
-    try{const saved=sessionStorage.getItem('mako-board-demo-v1');if(saved)data=JSON.parse(saved);}catch{/* Use the demo defaults when storage is unavailable. */}
+    try{const saved=sessionStorage.getItem('mako-board-demo-v5-lawn');if(saved)data=JSON.parse(saved);}catch{/* Use the demo defaults when storage is unavailable. */}
     if(!cancelled)setRecords(attentionItems(data,data.report?.today||localDay(),enabled).hasAttention);
     return;
    }

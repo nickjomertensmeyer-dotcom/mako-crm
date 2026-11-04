@@ -6,7 +6,7 @@ import {Plus,Package,Save,X} from 'lucide-react';
 import {operationKinds,projectCosts,stockOnHand,validateOperation,type Operation,type Movement} from '@/lib/operations';
 import {saveOperation,stockAction,receivePurchase,cancelWorkspaceBooking} from '@/app/workspace/operation-actions';
 type Contact={id:string;name:string};type Work={id:string;title:string};
-const names:Record<string,string>={assets:'Service assets',recurring:'Recurring work',booking:'Online booking',projects:'Projects & costs',inventory:'Inventory & purchasing'};
+const names:Record<string,string>={assets:'Properties & service assets',recurring:'Recurring work',booking:'Online booking',projects:'Projects & costs',inventory:'Inventory & purchasing'};
 const icons={assets:AssetIcon,recurring:RecurringIcon,booking:BookingIcon,projects:ProjectIcon,inventory:InventoryIcon};
 const blank=(kind:string):Operation=>({id:'',kind,title:'',customer_id:null,work_id:null,status:'Active',notes:'',details:Object.fromEntries(operationKinds[kind].fields.map(f=>[f.key,f.options?.[0]|| (f.key==='timezone'?'America/Chicago':f.key==='unit'?'each':'')])),version:0,archived:false});
 export function Operations({view,initial=[],movements=[],contacts=[],work=[],demo=false,enabled=true,owner=false,workspaceId='',bookings=[],totals={},visits=[]}:{view:string;visits?:{plan_id:string;visit_date:string;work_id:string}[];totals?:Record<string,number>;initial?:Operation[];movements?:Movement[];contacts?:Contact[];work?:Work[];demo?:boolean;enabled?:boolean;owner?:boolean;workspaceId?:string;bookings?:{id:string;slot_id:string;name:string;email:string;cancelled:boolean}[]}){

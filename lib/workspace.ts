@@ -14,5 +14,6 @@ export async function workspace() {
   if (!data) redirect('/onboarding');
   const business = Array.isArray(data.workspaces) ? data.workspaces[0] : data.workspaces;
   if (!business) redirect('/setup-required');
-  return { client, user, business:pilotExpired(business.pilot_ends_at)?{...business,status:'suspended'}:business, role: data.role };
+  const access=data.role==='owner'?true:(await client.rpc('is_workspace_member',{target:business.id})).data===true;
+  return { client, user, business:pilotExpired(business.pilot_ends_at)||!access?{...business,status:'suspended',seat_required:!access}:business, role: data.role };
 }

@@ -3,6 +3,7 @@ import {cookies} from 'next/headers';
 import {redirect} from 'next/navigation';
 import {supabase} from '@/lib/supabase/server';
 import {PILOT_COOKIE} from '@/lib/pilot';
+import {TEAM_COOKIE} from '@/lib/team';
 import {emailConfirmation,confirmationDestination} from '@/lib/email-confirmation';
 export async function confirmEmailLink(form:FormData){
  const input=emailConfirmation(form.get('token_hash'),form.get('type'));
@@ -12,5 +13,5 @@ export async function confirmEmailLink(form:FormData){
   console.warn('Mako email verification failed',{code:error.code||'unknown',status:error.status});
   redirect(`/auth/confirm?error=${error.status===429?'limited':error.status&&error.status>=500?'service':'invalid'}&type=${input.type}`);
  }
- redirect(confirmationDestination(input.type,(await cookies()).has(PILOT_COOKIE)));
+ redirect(input.type!=='recovery'&&(await cookies()).has(TEAM_COOKIE)?'/join':confirmationDestination(input.type,(await cookies()).has(PILOT_COOKIE)));
 }

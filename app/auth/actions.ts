@@ -2,11 +2,15 @@
 import {cookies} from 'next/headers';
 import {googleAuthCallback,GOOGLE_AUTH_COOKIE} from '@/lib/google-auth';
 import {PILOT_COOKIE} from '@/lib/pilot';
+import {TEAM_COOKIE} from '@/lib/team';
+import {PLAN_COOKIE} from '@/lib/plan-selection';
+import {planById} from '@/lib/plans';
 import { redirect } from 'next/navigation';
 import { supabase } from '@/lib/supabase/server';
 import { signupError } from '@/lib/signup-errors';
 const message = (path: string, text: string) => redirect(`${path}?message=${encodeURIComponent(text)}`);
 export async function signup(form:FormData){
+ const plan=planById(form.get('plan'));if(plan)(await cookies()).set(PLAN_COOKIE,plan.id,{httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'lax',path:'/',maxAge:86400});
  const email=String(form.get('email')||'').trim();const password=String(form.get('password')||'');
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||email.length>254||password.length<12||password.length>128||password!==form.get('confirm'))message('/signup','Use a valid email and matching passwords of 12–128 characters.');
  const origin=process.env.NEXT_PUBLIC_SITE_URL;
@@ -16,14 +20,14 @@ export async function signup(form:FormData){
   console.warn('Mako signup failed',{code:error.code||'unknown',status:error.status});
   message('/signup',signupError(error));
  }
- if(data.session)redirect((await cookies()).get(PILOT_COOKIE)?'/pilot':'/onboarding');
+ if(data.session)redirect((await cookies()).has(TEAM_COOKIE)?'/join':(await cookies()).get(PILOT_COOKIE)?'/pilot':'/onboarding');
  redirect('/signup?sent=1');
 }
 export async function login(form: FormData) {
   const client = await supabase();
   const { error } = await client.auth.signInWithPassword({ email: String(form.get('email') || '').trim(), password: String(form.get('password') || '') });
   if (error) message('/login', 'We couldn’t sign you in. Check your email and password, or reset your password.');
-  redirect((await cookies()).get(PILOT_COOKIE)?'/pilot':'/workspace');
+  redirect((await cookies()).has(TEAM_COOKIE)?'/join':(await cookies()).get(PILOT_COOKIE)?'/pilot':'/workspace');
 }
 export async function logout() { const client = await supabase(); await client.auth.signOut(); redirect('/login'); }
 export async function requestReset(form: FormData) {
@@ -50,6 +54,7 @@ export async function resetPassword(form: FormData) {
 }
 
 export async function googleAuth(form:FormData){
+ const plan=planById(form.get('plan'));if(plan)(await cookies()).set(PLAN_COOKIE,plan.id,{httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'lax',path:'/',maxAge:86400});
  const intent=form.get('intent')==='signup'?'signup':'login';
  const path=intent==='signup'?'/signup':'/login';
  let url:string|undefined;

@@ -1,0 +1,4 @@
+'use client';
+import {useActionState} from 'react';
+import {inviteTeamMember,type TeamResult} from '@/app/workspace/team/actions';
+export function TeamInviteForm({disabled=false}:{disabled?:boolean}){const [state,action,pending]=useActionState<TeamResult,FormData>(inviteTeamMember,{});return <form action={action}><label>Team member’s email<input name="email" type="email" maxLength={254} required disabled={disabled||pending} placeholder="person@example.com"/></label><button className="primary compact" disabled={disabled||pending}>{pending?'Creating invitation…':'Create invitation link'}</button>{state.error&&<p className="notice error-notice" role="alert">{state.error}</p>}{state.url&&<><p className="notice" role="status">{state.message}</p><label>Invitation link<input readOnly value={state.url} onFocus={e=>e.target.select()}/></label></>}</form>;}

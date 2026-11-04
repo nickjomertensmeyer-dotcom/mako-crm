@@ -5,7 +5,7 @@ export function verifyStripeSignature(body:string,header:string,secret:string,no
  const parts=header.split(',').map(p=>p.split('='));const time=parts.find(([k])=>k==='t')?.[1];if(!time||!/^\d+$/.test(time)||Math.abs(now-Number(time))>300)return false;
  try{Stripe.webhooks.constructEvent(body,header,secret,300,undefined,now*1000);return true;}catch{return false;}
 }
-export type EntitlementSubscription={id:string;status:string;livemode:boolean;cancel_at_period_end:boolean;pause_collection?:unknown;trial_end?:number;trial_start?:number;default_payment_method?:string|{id:string}|null;metadata?:Record<string,string>;latest_invoice:BillingInvoice|string|null;previousPaidThrough?:number;items:{data:{price:{id:string;unit_amount?:number|null;currency?:string};current_period_end?:number}[]}};
+export type EntitlementSubscription={id:string;status:string;livemode:boolean;cancel_at_period_end:boolean;pause_collection?:unknown;pending_update?:unknown;schedule?:unknown;trial_end?:number;trial_start?:number;default_payment_method?:string|{id:string}|null;metadata?:Record<string,string>;latest_invoice:BillingInvoice|string|null;previousPaidThrough?:number;items:{data:{id?:string;quantity?:number|null;price:{id:string;unit_amount?:number|null;currency?:string};current_period_end?:number}[]}};
 export function proEntitlement(subscriptions:EntitlementSubscription[],prices:string|string[],live:boolean,setupPrice?:string,now=Math.floor(Date.now()/1000)){
  const accepted=Array.isArray(prices)?prices:[prices];
  const matching=subscriptions.filter(s=>s.livemode===live&&s.items.data.some(i=>accepted.includes(i.price.id)));
@@ -18,7 +18,8 @@ export function proEntitlement(subscriptions:EntitlementSubscription[],prices:st
   const trial=!s.pause_collection&&s.status==='trialing'&&s.metadata?.mako_trial===PRO_TRIAL_OFFER&&Boolean(s.default_payment_method)&&Number.isFinite(s.trial_start)&&Number.isFinite(s.trial_end)&&s.trial_start!<=now&&s.trial_end!>now&&s.trial_end!>s.trial_start!&&s.trial_end!-s.trial_start!<=PRO_TRIAL_DAYS*86400;
   // Cancellation/refunds do not remove the remainder of an already-paid period.
   const retained=!s.pause_collection&&s.status==='canceled'&&paidThrough>now;
-  return {s,active:Boolean(trial||paid||retained||graceEnd>now),paidThrough,graceEnd};
+  const pendingChange=!s.pause_collection&&s.status==='active'&&Boolean(s.pending_update)&&invoice?.status==='open'&&invoice.billing_reason==='subscription_update'&&paidThrough>now;
+  return {s,active:Boolean(trial||paid||retained||pendingChange||graceEnd>now),paidThrough,graceEnd};
  });
  const chosen=evaluated.find(x=>x.active)||evaluated.find(x=>!['canceled','incomplete_expired'].includes(x.s.status))||evaluated[0];
  return {subscription:chosen?.s.id||null,status:chosen?.s.status||'none',active:Boolean(chosen?.active),cancelAtEnd:Boolean(chosen?.s.cancel_at_period_end),paidThrough:chosen?.paidThrough||0,graceEnd:chosen?.graceEnd||0};

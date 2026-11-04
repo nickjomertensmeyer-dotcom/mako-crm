@@ -1,5 +1,4 @@
 'use server';
-import {openBilling} from '@/app/workspace/billing/actions';
 import {cookies} from 'next/headers';
 import {PILOT_COOKIE} from '@/lib/pilot';
 import { redirect } from 'next/navigation';
@@ -14,6 +13,6 @@ export async function saveWorkspace(form: FormData) {
   const {error}=membership ? await client.rpc('configure_workspace',{target:membership.workspace_id,business_name:name,business_industry:industry,selected_modules:selected}) : await client.rpc('create_workspace',{business_name:name,business_industry:industry,selected_modules:selected});
   if(error) redirect('/onboarding?message=Could+not+save.+Contact+Mako+if+this+continues.');
   if((await cookies()).get(PILOT_COOKIE))redirect('/pilot');
-  if(!membership){const billing=new FormData();billing.set('intent','checkout');return openBilling(billing);}
+  if(!membership)redirect('/workspace?view=plan');
   redirect('/workspace');
 }

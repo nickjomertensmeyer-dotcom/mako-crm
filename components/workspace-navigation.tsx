@@ -11,7 +11,7 @@ const groups=[['Sales',['customers','leads','quotes']],['Work',['tasks','jobs','
 export function WorkspaceNavigation({business,demo=false,current}:{business:Business;demo?:boolean;current:string}){
   const configured=useBusinessIdentity(business,demo),base=demo?'/preview':'/workspace';
   return <nav aria-label="Workspace navigation"><Link className={current==='overview'?'active':''} aria-current={current==='overview'?'page':undefined} href={base}><LayoutDashboard size={19}/>Overview</Link><AttentionNavLink demo={demo} current={current} modules={configured.modules} workspaceId={business.id}/>{groups.map(([section,keys])=>{
-    const visible=links.filter(([key])=>(keys as readonly string[]).includes(key)&&configured.modules.includes(key));
-    return visible.length?<div className="nav-group" key={section}><p className="nav-section">{section}</p>{visible.map(([key,label,Icon])=><Link key={key} className={current===key?'active':''} aria-current={current===key?'page':undefined} href={`${base}?view=${key}`}><Icon size={19}/>{label}{key==='team'&&<small className="soon">Soon</small>}</Link>)}</div>:null;
+    const visible=links.filter(([key])=>(keys as readonly string[]).includes(key)&&(key==='team'||configured.modules.includes(key)));
+    return visible.length?<div className="nav-group" key={section}><p className="nav-section">{section}</p>{visible.map(([key,label,Icon])=><Link key={key} className={current===key?'active':''} aria-current={current===key?'page':undefined} href={`${base}?view=${key}`}><Icon size={19}/>{key==='assets'&&configured.industry==='Mobile detailing'?'Vehicles':key==='assets'&&configured.industry==='Landscaping & lawn care'?'Properties':label}</Link>)}</div>:null;
   })}{configured.modules.some(key=>key==='customers'||key==='leads')&&<Link className={current==='followups'?'active':''} href={`${base}?view=followups`}><Mail size={19}/>Follow-ups</Link>}<SharkyLaunchButton/></nav>;
 }

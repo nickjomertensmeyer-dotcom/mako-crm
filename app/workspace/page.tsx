@@ -1,4 +1,5 @@
 import {PilotVisit} from '@/components/pilot-visit';
+import {TeamManagement} from '@/components/team-management';
 import {PilotBanner} from '@/components/pilot-banner';
 import {Connections} from '@/components/connections';
 import {SubscriptionPanel} from '@/components/subscription-panel';
@@ -25,7 +26,7 @@ export default async function Page({searchParams}:{searchParams:Promise<{view?:s
   canContacts?client.from('contacts').select('*',{count:'exact'}).eq('workspace_id',business.id).order('created_at',{ascending:false}).limit(1000):Promise.resolve({data:[],error:null,count:0}),
   business.modules.includes('tasks')?client.from('tasks').select('*',{count:'exact'}).eq('workspace_id',business.id).order('created_at',{ascending:false}).limit(1000):Promise.resolve({data:[],error:null,count:0}),
   view==='overview'||view==='invoices'?client.rpc('workspace_business_summary',{target:business.id}):Promise.resolve({data:null})]);
- const enabled=['overview','attention','followups','assistant','support','plan','workflows','notifications','settings','business-settings','connections'].includes(view)||business.modules.includes(view);
+ const enabled=['overview','attention','followups','assistant','support','plan','team','workflows','notifications','settings','business-settings','connections'].includes(view)||business.modules.includes(view);
  const emailReady=Boolean(process.env.RESEND_API_KEY&&process.env.FOLLOWUP_FROM_EMAIL&&process.env.SUPABASE_SECRET_KEY&&process.env.CRON_SECRET);
  const aiReady=Boolean(process.env.OPENAI_API_KEY&&process.env.OPENAI_MODEL);
  const active=business.status==='active'&&['pro','custom'].includes(business.plan);
@@ -62,5 +63,6 @@ export default async function Page({searchParams}:{searchParams:Promise<{view?:s
  if(view==='business-settings')content=<BusinessSettings business={business} owner={role==='owner'}/>;
  if(view==='connections')content=<Connections/>;
  if(view==='settings')content=<AccountSettingsPage owner={role==='owner'}/>;
+ if(view==='team')content=<TeamManagement/>;
  return <Dashboard business={business} current={view} assistantEnabled={active&&aiReady} account={accountSettings(user.user_metadata,user.email)}><PilotVisit/><PilotBanner endsAt={business.pilot_ends_at}/>{message&&<p className="notice" role="status">{message}</p>}{(contactError||taskError)&&<p className="notice">Some records could not be loaded. Refresh or contact Mako.</p>}{content||(!enabled?<section className="panel"><h1>This tool isn’t enabled.</h1><a href="/onboarding">Update workspace settings</a></section>:view==='overview'?<Overview business={business} contacts={contacts||[]} tasks={tasks||[]} summary={summary||undefined}/>:['customers','leads','tasks'].includes(view)?<><Records view={view} contacts={contacts||[]} tasks={tasks||[]} active={active}/>{(contactCount||0)>1000||(taskCount||0)>1000?<p className="small-copy muted">Showing the latest 1,000 records. Your full records are available in the workspace export.</p>:null}</>:<section className="panel"><p className="eyebrow">ON YOUR WORKSPACE ROADMAP</p><h1 className="capitalize">{view}</h1><p className="muted">This tool is selected for your business. It will be available in a future release.</p><a href="/workspace">Back to overview</a></section>)}</Dashboard>;
 }
