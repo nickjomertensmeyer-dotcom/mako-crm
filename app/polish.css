@@ -204,3 +204,11 @@ input:focus,select:focus,textarea:focus{outline:3px solid #2457e826;border-color
 @media(max-width:640px){.subscription-panel{padding:18px 16px}.subscription-panel .form-grid{grid-template-columns:1fr}}
 
 .getting-started-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}
+
+.document-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:0 0 14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.document-heading .eyebrow{margin:0 0 4px}
+.document-heading h2{margin:0;font-size:26px;letter-spacing:-.04em}
+.document-due{font-size:20px;color:var(--blue-deep);background:#eef3ff;border-radius:999px;padding:6px 14px}
+#online-payment{scroll-margin-top:90px}
+.app-shell[data-theme=dark] .document-heading{border-bottom-color:#2a3a58}
+.app-shell[data-theme=dark] .document-due{background:#1e2f4d;color:#cfe0ff}
