@@ -46,6 +46,6 @@ export async function merchantOnboarding(workspaceId:string,country?:string){
 }
 export function connectError(error:unknown){
  const e=error as {type?:string;code?:string;message?:string};
- if(e.type){console.error('Stripe Connect request failed',{type:e.type,code:e.code});return 'Stripe could not complete this action. Mako needs to check the connection permissions and configuration.';}
+ if(e.type){console.error('Stripe Connect request failed',{type:e.type,code:e.code});if(e.code==='account_create_activation_required')return 'Mako’s Stripe account has not finished activating live payments yet, so Stripe will not let it connect businesses. Mako needs to complete Stripe account activation and the Connect platform setup first.';return 'Stripe could not complete this action. Mako needs to check the connection permissions and configuration.';}
  return e.message||'Could not complete this request.';
 }
