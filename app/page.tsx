@@ -1,4 +1,3 @@
-import {CookieNotice} from '@/components/cookie-notice';
 import {HeroSharkAccent} from '@/components/hero-shark-accent';
 import {HomeNavigation} from '@/components/home-navigation';
 import {HomeProductPreview} from '@/components/home-product-preview';
@@ -37,4 +36,4 @@ export default function Home(){return <main id="main" className="marketing mako-
  ].map(([q,a])=><details key={q}><summary>{q}</summary><p>{a}</p></details>)}</section>
  <section className="home-final"><p className="eyebrow">STAY SHARP. MOVE FASTER.</p><h2>Your next lawn care job.<br/>A little more organized.</h2><p>See the workflow before you commit.</p><a className="primary" href="/preview">Try the lawn care demo <ArrowUpRight size={18}/></a></section>
  <footer className="marketing-footer"><Brand/><div><strong>Mako CRM</strong><p>Built for landscaping and lawn care businesses.</p><a href={'mailto:'+businessInfo.supportEmail}>{businessInfo.supportEmail}</a></div><nav aria-label="Footer navigation"><a href="/about">About</a><a href="/for/lawn-care">Lawn care CRM</a><a id="templates" href="https://makocrm.myshopify.com/collections/all">Google Sheets templates</a><a href={businessInfo.contact}>Contact</a><a href="/reviews">Reviews</a><a href="/privacy">Privacy</a><a href="/cookies">Cookies</a><a href="/terms">Terms</a><a href="/login">Log in</a></nav></footer>
- <CookieNotice/></main>;}
+ </main>;}
